@@ -237,12 +237,13 @@ private fun DeadlineBadge(deadline: String) {
 }
 
 @Composable
-private fun InfoChip(
+fun InfoChip(
     label: String,
+    modifier: Modifier = Modifier,
     leadingIcon: (@Composable () -> Unit)? = null,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .height(32.dp)
             .clip(RoundedCornerShape(19.dp))
             .background(NeutralContainer)

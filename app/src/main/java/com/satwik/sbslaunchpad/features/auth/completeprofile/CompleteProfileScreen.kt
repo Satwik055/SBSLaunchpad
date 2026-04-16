@@ -1,4 +1,4 @@
-package com.satwik.sbslaunchpad.features.completeprofile
+package com.satwik.sbslaunchpad.features.auth.completeprofile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -30,8 +31,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadButton
+import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTopAppBar
 import com.satwik.sbslaunchpad.core.designsystem.components.MultiTextField
 import com.satwik.sbslaunchpad.core.designsystem.components.UploadInputButton
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
@@ -79,40 +82,17 @@ fun CompleteProfileScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        // Top Bar
-        Box(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            IconButton(
-                onClick = { /* TODO: Handle back click */ },
-                modifier = Modifier.size(48.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_carret2),
-                    contentDescription = "Back",
-                    modifier = Modifier.size(16.dp),
-                    tint = TextPrimary
-                )
-            }
-
-            Text(
-                text = "Complete Profile",
-                modifier = Modifier.align(Alignment.Center),
-                style = TextStyle(
-                    fontFamily = fontFamily,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 20.sp,
-                    color = TextPrimary
-                )
-            )
-        }
+        LaunchpadTopAppBar(
+            title = "Complete Profile",
+            onBackClick = { /* TODO: Handle back click */ }
+        )
 
         Box(modifier = Modifier.weight(1f)) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(scrollState)
+                    .padding(horizontal = LocalHorizontalAppPadding.current)
             ) {
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -134,7 +114,7 @@ fun CompleteProfileScreen(
                     }
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
                 // Upload Section
                 Text(
@@ -212,13 +192,16 @@ fun CompleteProfileScreen(
         LaunchpadButton(
             text = "Submit",
             onClick = { /* TODO: Handle submit */ },
-            modifier = Modifier.padding(bottom = 10.dp, top = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = LocalHorizontalAppPadding.current)
+                .padding(bottom = 10.dp, top = 16.dp)
         )
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun CompleteProfileScreenPreview() {
-    CompleteProfileScreen(modifier = Modifier.padding(vertical = 16.dp, horizontal = 16.dp))
+    CompleteProfileScreen(modifier = Modifier.statusBarsPadding())
 }

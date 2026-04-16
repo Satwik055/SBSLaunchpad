@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTabRow
+import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTopAppBar
 import com.satwik.sbslaunchpad.core.designsystem.components.NoticeItemData
 import com.satwik.sbslaunchpad.core.designsystem.components.NotificationItemData
 import com.satwik.sbslaunchpad.core.designsystem.theme.IconPrimary
@@ -78,7 +79,10 @@ fun NotificationScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        NotificationTopBar(onBackClick = onBackClick)
+        LaunchpadTopAppBar(
+            title = "Notifications",
+            onBackClick = onBackClick
+        )
 
         LaunchpadTabRow(
             selectedTabIndex = pagerState.targetPage,
@@ -114,36 +118,6 @@ fun NotificationScreen(
             content = sheetContent!!,
             sheetState = sheetState,
             onDismiss = { sheetContent = null }
-        )
-    }
-}
-
-@Composable
-private fun NotificationTopBar(
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_carret2),
-            contentDescription = "Back",
-            tint = IconPrimary,
-            modifier = Modifier
-                .size(16.dp)
-                .clickable { onBackClick() }
-        )
-        Text(
-            text = "Notifications",
-            fontFamily = poppins,
-            fontWeight = FontWeight.Normal,
-            fontSize = 20.sp,
-            color = TextPrimary,
-            modifier = Modifier.padding(start = 24.dp)
         )
     }
 }

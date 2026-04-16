@@ -12,7 +12,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
@@ -20,14 +19,16 @@ import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTabRow
 import com.satwik.sbslaunchpad.core.designsystem.components.SearchBarTrigger
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
-import com.satwik.sbslaunchpad.features.home.internships.InternshipsScreen
-import com.satwik.sbslaunchpad.features.home.jobs.JobsScreen
+import com.satwik.sbslaunchpad.features.home.tabs.internships.InternshipsScreen
+import com.satwik.sbslaunchpad.features.home.tabs.jobs.JobsScreen
 import com.satwik.sbslaunchpad.features.home.local_component.HomeTopAppBar
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = koinViewModel(),
     onNotificationClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
@@ -37,6 +38,7 @@ fun HomeScreen(
     val tabs = listOf("Jobs", "Internships")
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
+
 
     Column(
         modifier = modifier
@@ -69,8 +71,8 @@ fun HomeScreen(
             beyondViewportPageCount = 1
         ) { page ->
             when (page) {
-                0 -> JobsScreen(onJobClick = onJobClick)
-                1 -> InternshipsScreen(onInternshipClick = onInternshipClick)
+                0 -> JobsScreen(viewModel = viewModel, onJobClick = onJobClick)
+                1 -> InternshipsScreen(viewModel = viewModel, onInternshipClick = onInternshipClick)
             }
         }
     }

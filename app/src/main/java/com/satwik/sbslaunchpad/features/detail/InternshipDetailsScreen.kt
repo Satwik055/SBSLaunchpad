@@ -29,7 +29,6 @@ import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.components.InfoChip
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadButton
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
-import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.OnNeutralContainer
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
@@ -41,7 +40,7 @@ import com.satwik.sbslaunchpad.features.detail.local_components.NoteSection
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun JobDetailsScreen(
+fun InternshipDetailsScreen(
     id: String,
     modifier: Modifier = Modifier,
     viewModel: DetailViewModel = koinViewModel(),
@@ -60,17 +59,17 @@ fun JobDetailsScreen(
             .background(BackgroundDefault)
     ) {
         if (result.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = BrandPrimary)
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else if (result.success) {
             val post = result.successResult as Post
-            JobDetailsContent(
+            InternshipDetailsContent(
                 title = post.profile,
                 company = post.companyName,
                 group = post.group,
                 city = post.city,
                 applicants = post.applicants,
                 description = post.description,
-                compensation = post.amount,
+                stipend = post.amount,
                 requirements = post.requirements,
                 postedDate = post.postedDate,
                 companyLogoUrl = post.companyLogoUrl,
@@ -87,14 +86,14 @@ fun JobDetailsScreen(
 }
 
 @Composable
-private fun JobDetailsContent(
+private fun InternshipDetailsContent(
     title: String,
     company: String,
     group: String,
     city: String,
     applicants: String,
     description: String,
-    compensation: String,
+    stipend: String,
     requirements: String,
     postedDate: String,
     companyLogoUrl: String?,
@@ -152,9 +151,10 @@ private fun JobDetailsContent(
                     InfoChip(label = "$applicants Applicants")
                 }
 
+                // We are reusing JobDescriptionCard but passing stipend as compensation
                 JobDescriptionCard(
                     description = description,
-                    compensation = compensation,
+                    compensation = stipend,
                     requirements = requirements
                 )
 
@@ -180,7 +180,7 @@ private fun JobDetailsContent(
                 .padding(16.dp)
         ) {
             LaunchpadButton(
-                text = "Apply",
+                text = "Apply Now",
                 onClick = onApplyClick,
                 modifier = Modifier.fillMaxWidth()
             )

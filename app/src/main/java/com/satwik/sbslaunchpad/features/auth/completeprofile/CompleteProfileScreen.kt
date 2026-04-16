@@ -1,5 +1,6 @@
 package com.satwik.sbslaunchpad.features.auth.completeprofile
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
@@ -31,11 +34,17 @@ import com.satwik.sbslaunchpad.core.designsystem.components.UploadInputButton
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceOutline
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
+import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
+import com.satwik.sbslaunchpad.features.auth.AuthViewModel
 import com.satwik.sbslaunchpad.features.auth.local_component.ScrollShadows
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CompleteProfileScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: AuthViewModel = koinViewModel(),
+    onBackClick: () -> Unit = {},
+    onSubmitSuccess: () -> Unit = {}
 ) {
     val firstNameState = rememberTextFieldState()
     val lastNameState = rememberTextFieldState()
@@ -47,13 +56,16 @@ fun CompleteProfileScreen(
     val permanentAddressState = rememberTextFieldState()
 
     val scrollState = rememberScrollState()
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .background(BackgroundDefault)
     ) {
         LaunchpadTopAppBar(
             title = "Complete Profile",
-            onBackClick = { /* TODO: Handle back click */ }
+            onBackClick = onBackClick
         )
 
         ScrollShadows(
@@ -155,7 +167,10 @@ fun CompleteProfileScreen(
         // Bottom Button (Sticky)
         LaunchpadButton(
             text = "Submit",
-            onClick = { /* TODO: Handle submit */ },
+            loading = uiState.isLoading,
+            onClick = {
+                viewModel.completeProfile(onSuccess = onSubmitSuccess)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = LocalHorizontalAppPadding.current)

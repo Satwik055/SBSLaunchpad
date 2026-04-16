@@ -1,5 +1,6 @@
 package com.satwik.sbslaunchpad.features.notifications
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTabRow
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTopAppBar
+import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
 import com.satwik.sbslaunchpad.features.notifications.components.NotificationDetailSheet
 import com.satwik.sbslaunchpad.features.notifications.model.NotificationSheetState
@@ -44,7 +46,9 @@ fun NotificationScreen(
     val sheetState = rememberModalBottomSheetState()
 
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .background(BackgroundDefault)
     ) {
         LaunchpadTopAppBar(
             title = "Notifications",

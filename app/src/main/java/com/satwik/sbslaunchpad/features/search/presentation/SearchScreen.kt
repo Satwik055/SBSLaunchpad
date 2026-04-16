@@ -25,116 +25,94 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceOutline
 import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
-import com.satwik.sbslaunchpad.features.home.jobs.JobPost
+import com.satwik.sbslaunchpad.data.post.Post
+import com.satwik.sbslaunchpad.data.post.PostType
 
 @Composable
 fun SearchScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onJobClick: (String) -> Unit = {}
 ) {
     val searchState = rememberTextFieldState()
-    val jobs = remember {
+    val posts = remember {
         listOf(
-            JobPost(
+            Post(
                 id = "1",
-                jobProfile = "Audit Assistant",
+                profile = "Audit Assistant",
                 companyName = "Deloitte",
                 deadline = "3 Days",
                 group = "Group A",
                 city = "Banglore",
                 applicants = "40 Applicants",
-                salary = "₹ 6,00,000 - ₹ 7,00,000"
+                amount = "₹ 6,00,000 - ₹ 7,00,000",
+                type = PostType.JOB
             ),
-            JobPost(
+            Post(
                 id = "2",
-                jobProfile = "Key Accounts Manag...",
+                profile = "Key Accounts Manag...",
                 companyName = "District",
                 deadline = "4 Days",
                 group = "Group B",
                 city = "New Delhi",
                 applicants = "20 Applicants",
-                salary = "₹6,50,000"
+                amount = "₹6,50,000",
+                type = PostType.JOB
             ),
-            JobPost(
+            Post(
                 id = "3",
-                jobProfile = "Associate",
+                profile = "Associate",
                 companyName = "Daloopa",
                 deadline = "5 Days",
                 group = "Group B",
                 city = "Mumbai",
                 applicants = "10 Applicants",
-                salary = "₹5,00,000"
+                amount = "₹5,00,000",
+                type = PostType.JOB
             ),
-            JobPost(
+            Post(
                 id = "4",
-                jobProfile = "Reservation Associate",
+                profile = "Reservation Associate",
                 companyName = "Oberoi Group",
                 deadline = "6 Days",
                 group = "Group C",
                 city = "Mumbai",
                 applicants = "8 Applicants",
-                salary = "₹3,30,000"
+                amount = "₹3,30,000",
+                type = PostType.JOB
             ),
-            JobPost(
-                id = "5",
-                jobProfile = "Software Engineer Intern",
-                companyName = "Google",
-                deadline = "10 Days",
-                group = "Group A",
-                city = "Bangalore",
-                applicants = "100 Applicants",
-                salary = "₹ 50,000 / Month"
-            ),
-            JobPost(
-                id = "6",
-                jobProfile = "Product Management Intern",
-                companyName = "Microsoft",
-                deadline = "15 Days",
-                group = "Group B",
-                city = "Hyderabad",
-                applicants = "50 Applicants",
-                salary = "₹ 40,000 / Month"
-            ),
-            JobPost(
+            Post(
                 id = "7",
-                jobProfile = "Data Analyst",
+                profile = "Data Analyst",
                 companyName = "Amazon",
                 deadline = "2 Days",
                 group = "Group A",
                 city = "Chennai",
                 applicants = "200 Applicants",
-                salary = "₹ 12,00,000 - ₹ 15,00,000"
+                amount = "₹ 12,00,000 - ₹ 15,00,000",
+                type = PostType.JOB
             ),
-            JobPost(
-                id = "8",
-                jobProfile = "UX Design Intern",
-                companyName = "Adobe",
-                deadline = "7 Days",
-                group = "Group C",
-                city = "Noida",
-                applicants = "30 Applicants",
-                salary = "₹ 35,000 / Month"
-            ),
-            JobPost(
+            Post(
                 id = "9",
-                jobProfile = "Full Stack Developer",
+                profile = "Full Stack Developer",
                 companyName = "Zomato",
                 deadline = "1 Day",
                 group = "Group B",
                 city = "Gurgaon",
                 applicants = "150 Applicants",
-                salary = "₹ 10,00,000 - ₹ 12,00,000"
+                amount = "₹ 10,00,000 - ₹ 12,00,000",
+                type = PostType.JOB
             )
         )
     }
 
-    val filteredJobs by remember {
+    val filteredPosts by remember {
         derivedStateOf {
             val query = searchState.text.toString()
             if (query.isEmpty()) {
-                emptyList<JobPost>()
+                emptyList<Post>()
             } else {
-                jobs.filter {
-                    it.jobProfile.contains(query, ignoreCase = true) ||
+                posts.filter {
+                    it.profile.contains(query, ignoreCase = true) ||
                             it.companyName.contains(query, ignoreCase = true)
                 }
             }
@@ -170,23 +148,24 @@ fun SearchScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(filteredJobs, key = { it.id }) { job ->
+                items(filteredPosts, key = { it.id }) { post ->
                     LaunchpadJobPostCard(
-                        jobProfile = job.jobProfile,
-                        companyName = job.companyName,
-                        deadline = job.deadline,
-                        group = job.group,
-                        city = job.city,
-                        applicants = job.applicants,
-                        salary = job.salary,
+                        jobProfile = post.profile,
+                        companyName = post.companyName,
+                        deadline = post.deadline,
+                        group = post.group,
+                        city = post.city,
+                        applicants = post.applicants,
+                        salary = post.amount,
                         isApplied = false,
-                        onClick = { /* Handle job click */ }
+                        onClick = { onJobClick(post.id) }
                     )
                 }
             }
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

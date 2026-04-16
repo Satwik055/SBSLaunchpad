@@ -50,6 +50,56 @@ fun InternshipsScreen(
                 city = "Bangalore",
                 applicants = "500 Applicants",
                 salary = "₹ 1,00,000"
+            ),
+            InternshipPost(
+                id = "3",
+                jobProfile = "Data Science Intern",
+                companyName = "Microsoft",
+                deadline = "7 Days",
+                group = "Group A",
+                city = "Hyderabad",
+                applicants = "250 Applicants",
+                salary = "₹ 80,000"
+            ),
+            InternshipPost(
+                id = "4",
+                jobProfile = "UX Research Intern",
+                companyName = "Meta",
+                deadline = "10 Days",
+                group = "Group C",
+                city = "Remote",
+                applicants = "120 Applicants",
+                salary = "₹ 60,000"
+            ),
+            InternshipPost(
+                id = "5",
+                jobProfile = "Finance Intern",
+                companyName = "Goldman Sachs",
+                deadline = "3 Days",
+                group = "Group B",
+                city = "Mumbai",
+                applicants = "300 Applicants",
+                salary = "₹ 75,000"
+            ),
+            InternshipPost(
+                id = "6",
+                jobProfile = "Content Writing Intern",
+                companyName = "Swiggy",
+                deadline = "1 Day",
+                group = "Group C",
+                city = "Bangalore",
+                applicants = "80 Applicants",
+                salary = "₹ 20,000"
+            ),
+            InternshipPost(
+                id = "7",
+                jobProfile = "Business Analyst Intern",
+                companyName = "McKinsey",
+                deadline = "12 Days",
+                group = "Group A",
+                city = "Gurgaon",
+                applicants = "400 Applicants",
+                salary = "₹ 90,000"
             )
         )
     }

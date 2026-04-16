@@ -1,26 +1,30 @@
 package com.satwik.sbslaunchpad.features.notifications.updates
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadNotificationItem
-import com.satwik.sbslaunchpad.core.designsystem.components.NotificationItemData
 import com.satwik.sbslaunchpad.core.designsystem.components.customShadow
 import com.satwik.sbslaunchpad.core.designsystem.theme.DefaultElevation
 import com.satwik.sbslaunchpad.core.designsystem.theme.ElevationStrength
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceDefault
-import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceDefault
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.draw.clip
+import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
+import com.satwik.sbslaunchpad.features.notifications.model.NotificationItemData
 
 @Composable
 fun UpdatesScreen(
@@ -66,27 +70,42 @@ fun UpdatesScreen(
         )
     )
 
-    LazyColumn(
-        modifier = modifier
-            .padding(16.dp)
-            .customShadow(
-                elevation = DefaultElevation,
-                shape = RoundedCornerShape(12.dp),
-                alpha = ElevationStrength,
+    val scrollState = rememberLazyListState()
+
+    LazyScrollShadows(scrollState = scrollState) {
+        LazyColumn(
+            modifier = modifier.fillMaxSize(),
+            state = scrollState,
+            contentPadding = PaddingValues(
+                horizontal = LocalHorizontalAppPadding.current,
+                vertical = 24.dp
             )
-            .clip(RoundedCornerShape(12.dp))
-            .background(SurfaceDefault)
-    ) {
-        itemsIndexed(sampleNotifications) { index, notification ->
-            LaunchpadNotificationItem(
-                title = notification.title,
-                company = notification.company,
-                description = notification.description,
-                time = notification.time,
-                logoUrl = notification.logoUrl,
-                showDivider = index != sampleNotifications.lastIndex,
-                onClick = { onNotificationClick(notification) }
-            )
+        ) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .customShadow(
+                            elevation = DefaultElevation,
+                            shape = RoundedCornerShape(12.dp),
+                            alpha = ElevationStrength,
+                        )
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(SurfaceDefault)
+                ) {
+                    sampleNotifications.forEachIndexed { index, notification ->
+                        LaunchpadNotificationItem(
+                            title = notification.title,
+                            company = notification.company,
+                            description = notification.description,
+                            time = notification.time,
+                            logoUrl = notification.logoUrl,
+                            showDivider = index != sampleNotifications.lastIndex,
+                            onClick = { onNotificationClick(notification) }
+                        )
+                    }
+                }
+            }
         }
     }
 }

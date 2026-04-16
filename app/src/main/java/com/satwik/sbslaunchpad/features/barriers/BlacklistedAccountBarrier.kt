@@ -26,6 +26,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.IconSecondary
@@ -123,7 +124,8 @@ fun BlacklistedAccountBarrier(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 32.dp)
+                .padding(horizontal = LocalHorizontalAppPadding.current)
+                .padding(bottom = 32.dp)
                 .navigationBarsPadding()
         )
     }

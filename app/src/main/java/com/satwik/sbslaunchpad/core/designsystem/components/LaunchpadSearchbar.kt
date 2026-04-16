@@ -1,6 +1,10 @@
 package com.satwik.sbslaunchpad.core.designsystem.components
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -22,19 +26,22 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.IconPrimary
+import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceOutline
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextPlaceholder
+import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
+import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
 
 
 @Composable
 fun LaunchpadSearchBar(
     modifier:Modifier = Modifier,
-    query: String,
-    onQueryChange: (String) -> Unit,
+    state: TextFieldState,
     placeholder:String,
     fontFamily:FontFamily = poppins,
     leadingButtonOnClick:() -> Unit,
@@ -52,13 +59,11 @@ fun LaunchpadSearchBar(
         }
     }
     TextField(
+        state = state ,
         modifier = modifier
+            .height(65.dp)
             .fillMaxWidth()
             .focusRequester(focusRequester),
-
-        value = query,
-
-        onValueChange = onQueryChange,
 
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
@@ -66,11 +71,17 @@ fun LaunchpadSearchBar(
             disabledContainerColor = Color.Transparent,
             cursorColor = BrandPrimary,
             focusedIndicatorColor = BrandPrimary,
-            unfocusedIndicatorColor = Color.White,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
         ),
-        singleLine = true,
-
-        textStyle = TextStyle(fontFamily = fontFamily, fontWeight = FontWeight.Normal, color = Color.White),
+        lineLimits = TextFieldLineLimits.SingleLine,
+        textStyle = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Normal,
+            color = TextPrimary,
+            fontSize = 16.sp,
+            platformStyle = PlatformTextStyle(includeFontPadding = false)
+        ),
 
         trailingIcon = {
             IconButton(onClick = trailButtonOnClick,
@@ -106,17 +117,20 @@ fun LaunchpadSearchBar(
     )
 }
 
-
-
-
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun LaunchpadSearchBarPreview(){
-    var text by remember { mutableStateOf("") }
-    LaunchpadSearchBar(
-        query = text,
-        onQueryChange = {text = it},
-        placeholder = "Search for workspaces",
-        trailButtonOnClick = { /*TODO*/ },
-        leadingButtonOnClick = { /*TODO*/ })
+private fun LaunchpadSearchBarPreview() {
+    val state = rememberTextFieldState()
+    SBSLaunchpadTheme {
+        LaunchpadSearchBar(
+            state = state,
+            placeholder = "Search for jobs...",
+            leadingButtonOnClick = {},
+            trailButtonOnClick = {}
+        )
+    }
 }
+
+
+
+

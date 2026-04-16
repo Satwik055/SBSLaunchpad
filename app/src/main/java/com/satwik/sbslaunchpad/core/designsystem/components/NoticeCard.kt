@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.satwik.sbslaunchpad.core.designsystem.theme.*
+import com.satwik.sbslaunchpad.features.notifications.model.NoticeItemData
 
 @Composable
 fun LaunchpadNoticeItem(
@@ -118,12 +119,6 @@ fun LaunchpadNoticeCard(
         }
     }
 }
-
-data class NoticeItemData(
-    val title: String,
-    val date: String,
-    val description: String
-)
 
 @Preview(showBackground = true)
 @Composable

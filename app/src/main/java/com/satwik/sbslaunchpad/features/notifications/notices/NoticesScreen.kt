@@ -1,21 +1,25 @@
 package com.satwik.sbslaunchpad.features.notifications.notices
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.satwik.sbslaunchpad.core.designsystem.components.NoticeItemData
+import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadNoticeItem
 import com.satwik.sbslaunchpad.core.designsystem.components.customShadow
 import com.satwik.sbslaunchpad.core.designsystem.theme.DefaultElevation
 import com.satwik.sbslaunchpad.core.designsystem.theme.ElevationStrength
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceDefault
+import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
+import com.satwik.sbslaunchpad.features.notifications.model.NoticeItemData
 
 @Composable
 fun NoticesScreen(
@@ -75,26 +79,40 @@ fun NoticesScreen(
         )
     )
 
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .customShadow(
-                elevation = DefaultElevation,
-                shape = RoundedCornerShape(12.dp),
-                alpha = ElevationStrength,
+    val scrollState = rememberLazyListState()
+
+    LazyScrollShadows(scrollState = scrollState) {
+        LazyColumn(
+            modifier = modifier.fillMaxSize(),
+            state = scrollState,
+            contentPadding = PaddingValues(
+                horizontal = LocalHorizontalAppPadding.current,
+                vertical = 24.dp
             )
-            .clip(RoundedCornerShape(12.dp))
-            .background(SurfaceDefault)
-    ) {
-        itemsIndexed(sampleNotices) { index, notice ->
-            LaunchpadNoticeItem(
-                title = notice.title,
-                date = notice.date,
-                description = notice.description,
-                showDivider = index != sampleNotices.lastIndex,
-                onClick = { onNoticeClick(notice) }
-            )
+        ) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .customShadow(
+                            elevation = DefaultElevation,
+                            shape = RoundedCornerShape(12.dp),
+                            alpha = ElevationStrength,
+                        )
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(SurfaceDefault)
+                ) {
+                    sampleNotices.forEachIndexed { index, notice ->
+                        LaunchpadNoticeItem(
+                            title = notice.title,
+                            date = notice.date,
+                            description = notice.description,
+                            showDivider = index != sampleNotices.lastIndex,
+                            onClick = { onNoticeClick(notice) }
+                        )
+                    }
+                }
+            }
         }
     }
 }

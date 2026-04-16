@@ -16,10 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
+import com.satwik.sbslaunchpad.features.account.presentation.AccountScreen
 import com.satwik.sbslaunchpad.features.auth.completeprofile.CompleteProfileScreen
 import com.satwik.sbslaunchpad.features.auth.login.LoginScreen
 import com.satwik.sbslaunchpad.features.auth.register.RegisterScreen
+import com.satwik.sbslaunchpad.features.detail.JobDetailsScreen
 import com.satwik.sbslaunchpad.features.home.HomeScreen
+import com.satwik.sbslaunchpad.features.notifications.NotificationScreen
+import com.satwik.sbslaunchpad.features.notifications.notices.NoticesScreen
+import com.satwik.sbslaunchpad.features.search.presentation.SearchScreen
 
 val LocalHorizontalAppPadding = staticCompositionLocalOf { 16.dp }
 
@@ -41,7 +46,7 @@ class MainActivity : ComponentActivity() {
 fun MainContent() {
     CompositionLocalProvider(LocalHorizontalAppPadding provides 16.dp) {
         Scaffold(containerColor = BackgroundDefault) { innerPadding->
-            HomeScreen(
+            SearchScreen(
                 modifier = Modifier.statusBarsPadding()
             )
         }

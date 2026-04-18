@@ -13,6 +13,12 @@ data object ScreenRegister : NavKey
 data object ScreenCompleteProfile : NavKey
 
 @Serializable
+data object ScreenBlacklisted : NavKey
+
+@Serializable
+data object ScreenVerificationPending : NavKey
+
+@Serializable
 data object ScreenHome : NavKey
 
 @Serializable

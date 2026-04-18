@@ -25,6 +25,7 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
 
 @Composable
 fun NoteSection(
+    note: String,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -56,7 +57,7 @@ fun NoteSection(
             )
         }
         Text(
-            text = "Only students who are genuinely interested in this opportunity should apply. Any student who withdraws or backs out at any stage of the process will be blacklisted from future placement opportunities.",
+            text = note,
             style = TextStyle(
                 fontFamily = poppins,
                 fontWeight = FontWeight.Normal,

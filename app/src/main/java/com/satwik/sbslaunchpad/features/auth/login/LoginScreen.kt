@@ -118,6 +118,7 @@ fun LoginScreen(
                         .fillMaxWidth()
                         .padding(bottom = 24.dp)
                 )
+                Spacer(Modifier.height(40.dp))
 
                 Row(
                     modifier = Modifier

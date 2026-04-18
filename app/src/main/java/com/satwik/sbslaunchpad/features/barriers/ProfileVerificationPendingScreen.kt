@@ -24,7 +24,7 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 
 @Composable
-fun ProfileVerificationPendingBarrier(
+fun ProfileVerificationPendingScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -98,6 +98,6 @@ fun ProfileVerificationPendingBarrier(
 
 @Preview(showBackground = true)
 @Composable
-private fun ProfileVerificationPendingBarrierPreview() {
-    ProfileVerificationPendingBarrier(onBackClick = {})
+private fun ProfileVerificationPendingScreenPreview() {
+    ProfileVerificationPendingScreen(onBackClick = {})
 }

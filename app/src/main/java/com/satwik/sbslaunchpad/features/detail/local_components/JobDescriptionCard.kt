@@ -27,7 +27,9 @@ fun JobDescriptionCard(
     modifier: Modifier = Modifier,
     description: String,
     compensation: String,
-    requirements: String
+    requirements: String,
+    deadline: String,
+    selectionProcess: String
 ) {
     Column(
         modifier = modifier
@@ -48,13 +50,23 @@ fun JobDescriptionCard(
         )
 
         DetailSection(
+            title = "Requirements",
+            content = requirements
+        )
+
+        DetailSection(
             title = "Compensation",
             content = compensation
         )
 
         DetailSection(
-            title = "Requirements",
-            content = requirements
+            title = "Deadline",
+            content = deadline
+        )
+
+        DetailSection(
+            title = "Selection Process",
+            content = selectionProcess
         )
     }
 }

@@ -9,8 +9,13 @@ import androidx.navigation3.ui.NavDisplay
 import com.satwik.sbslaunchpad.features.account.presentation.AccountScreen
 import com.satwik.sbslaunchpad.features.account.presentation.AccountViewModel
 import com.satwik.sbslaunchpad.features.auth.completeprofile.CompleteProfileScreen
+import com.satwik.sbslaunchpad.features.auth.completeprofile.CompleteProfileViewModel
 import com.satwik.sbslaunchpad.features.auth.login.LoginScreen
 import com.satwik.sbslaunchpad.features.auth.register.RegisterScreen
+import com.satwik.sbslaunchpad.features.barriers.BlacklistedAccountScreen
+import com.satwik.sbslaunchpad.features.barriers.BlacklistedAccountViewModel
+import com.satwik.sbslaunchpad.features.barriers.ProfileVerificationPendingScreen
+import com.satwik.sbslaunchpad.features.barriers.ProfileVerificationPendingViewModel
 import com.satwik.sbslaunchpad.features.detail.InternshipDetailsScreen
 import com.satwik.sbslaunchpad.features.detail.JobDetailsScreen
 import com.satwik.sbslaunchpad.features.home.HomeScreen
@@ -59,14 +64,25 @@ fun NavigationRoot(modifier: Modifier = Modifier, backStack: MutableList<NavKey>
 
                 is ScreenCompleteProfile -> {
                     NavEntry(key = key) {
-                        CompleteProfileScreen(
-                            onSubmitSuccess = {
-                                backStack.clear()
-                                backStack.add(ScreenHome)
-                            },
-                            onBackClick = {
-                                backStack.remove(key)
-                            }
+                        CompleteProfileScreen()
+                    }
+                }
+
+                is ScreenBlacklisted -> {
+                    NavEntry(key = key) {
+                        val viewModel: BlacklistedAccountViewModel = koinViewModel()
+                        BlacklistedAccountScreen(
+                            remark = "Testing Remark",
+                            onBackClick = { viewModel.logout() }
+                        )
+                    }
+                }
+
+                is ScreenVerificationPending -> {
+                    NavEntry(key = key) {
+                        val viewModel: ProfileVerificationPendingViewModel = koinViewModel()
+                        ProfileVerificationPendingScreen(
+                            onBackClick = { viewModel.logout() }
                         )
                     }
                 }

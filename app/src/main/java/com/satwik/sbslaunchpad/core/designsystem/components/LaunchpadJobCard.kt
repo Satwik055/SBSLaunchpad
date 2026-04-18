@@ -20,6 +20,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,6 +28,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.theme.*
+import com.satwik.sbslaunchpad.data.post.PostType
+import java.util.Locale
 
 @Composable
 fun LaunchpadJobPostCard(
@@ -36,8 +39,9 @@ fun LaunchpadJobPostCard(
     group: String,
     city: String,
     applicants: String,
-    salary: String,
+    salary: Int,
     isApplied: Boolean,
+    postType: PostType,
     modifier: Modifier = Modifier,
     companyLogoUrl: String? = null,
     onClick: () -> Unit = {},
@@ -63,6 +67,7 @@ fun LaunchpadJobPostCard(
                 city = city,
                 applicants = applicants,
                 salary = salary,
+                postType = postType,
                 companyLogoUrl = companyLogoUrl
             )
 
@@ -81,9 +86,12 @@ private fun JobPostCardBody(
     group: String,
     city: String,
     applicants: String,
-    salary: String,
+    salary: Int,
+    postType: PostType,
     companyLogoUrl: String?
 ) {
+
+    val formattedSalary =  "%,d".format(Locale.getDefault(), salary)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,6 +137,8 @@ private fun JobPostCardBody(
                 ) {
                     Text(
                         text = jobProfile,
+                        maxLines = 1,
+                        overflow = Ellipsis,
                         style = TextStyle(
                             fontFamily = poppins,
                             fontWeight = FontWeight.Medium,
@@ -147,6 +157,7 @@ private fun JobPostCardBody(
                     )
                 }
             }
+            Spacer(Modifier.width(20.dp))
 
             DeadlineBadge(deadline = deadline)
         }
@@ -190,10 +201,15 @@ private fun JobPostCardBody(
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(fontFamily = poppins, fontWeight = FontWeight.Medium, fontSize = 15.sp, color = TextPrimary)) {
-                        append(salary)
+                        append("₹$formattedSalary")
                     }
                     withStyle(SpanStyle(fontFamily = poppins, fontWeight = FontWeight.Normal, fontSize = 14.sp, color = TextSecondary)) {
-                        append("/yr")
+                        append(
+                            when (postType){
+                                PostType.JOB -> "/yr"
+                                PostType.INTERNSHIP -> "/month"
+                            }
+                        )
                     }
                 },
             )
@@ -305,7 +321,8 @@ fun LaunchpadJobPostCardPreview() {
                 group = "Group B",
                 city = "Delhi",
                 applicants = "42 Applicants",
-                salary = "₹ 4,40,000",
+                salary = 400000,
+                postType = PostType.JOB,
                 isApplied = true,
             )
         }

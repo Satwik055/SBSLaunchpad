@@ -1,5 +1,8 @@
 package com.satwik.sbslaunchpad.features.account.presentation
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -27,7 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,12 +38,15 @@ import coil.request.ImageRequest
 import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTopAppBar
+import com.satwik.sbslaunchpad.core.designsystem.components.customShadow
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
+import com.satwik.sbslaunchpad.core.designsystem.theme.DefaultElevation
+import com.satwik.sbslaunchpad.core.designsystem.theme.ElevationStrength
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 import com.satwik.sbslaunchpad.core.util.Result
-import com.satwik.sbslaunchpad.data.account.Account
+import com.satwik.sbslaunchpad.data.profile.Profile
 import com.satwik.sbslaunchpad.features.account.presentation.components.DocumentItem
 import com.satwik.sbslaunchpad.features.account.presentation.components.InfoItem
 import com.satwik.sbslaunchpad.features.account.presentation.components.LogoutButton
@@ -63,7 +68,7 @@ fun AccountScreen(
         onLogoutClick = {
             viewModel.logout()
             onLogoutClick()
-        }
+        },
     )
 }
 
@@ -72,10 +77,30 @@ fun AccountContent(
     modifier: Modifier = Modifier,
     accountState: Result,
     onBackClick: () -> Unit = {},
-    onLogoutClick: () -> Unit = {}
+    onLogoutClick: () -> Unit = {},
 ) {
-    val account = accountState.successResult as? Account
+    val profile = accountState.successResult as? Profile
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
+
+    fun viewDocument(url: String) {
+        if (url.isEmpty()) return
+        try {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(Uri.parse(url), "application/pdf")
+                addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+            }
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            // Fallback: Open in browser if no dedicated PDF viewer handles the URI
+            try {
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                context.startActivity(browserIntent)
+            } catch (ex: Exception) {
+                Toast.makeText(context, "No app found to open PDF", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     Column(
         modifier = modifier
@@ -121,7 +146,7 @@ fun AccountContent(
                         ) {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(account?.profileImageUrl)
+                                    .data(profile?.profileImageUrl)
                                     .crossfade(true)
                                     .build(),
                                 placeholder = painterResource(id = R.drawable.profile_big),
@@ -150,39 +175,41 @@ fun AccountContent(
 
                         // Info Card
                         Surface(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .customShadow(
+                                    elevation = 3.dp,
+                                    shape = RoundedCornerShape(12.dp),
+                                    alpha = ElevationStrength,
+                                )
+                            ,
                             shape = RoundedCornerShape(16.dp),
                             color = SurfaceDefault,
-                            shadowElevation = 2.dp
                         ) {
                             Column(
                                 modifier = Modifier.padding(16.dp)
                             ) {
-                                InfoItem(label = "Name", value = account?.name ?: "N/A")
-                                InfoItem(label = "Email", value = account?.email ?: "N/A")
-                                InfoItem(label = "University", value = account?.university ?: "N/A")
-                                InfoItem(label = "Course", value = account?.course ?: "N/A")
-                                InfoItem(label = "Semester", value = account?.semester ?: "N/A")
-                                InfoItem(label = "Phone", value = account?.phone ?: "N/A")
-                                InfoItem(label = "Backlogs", value = account?.backlogs ?: "N/A")
-                                InfoItem(label = "Roll Number", value = account?.rollNumber ?: "N/A")
-                                InfoItem(label = "Bio", value = account?.bio ?: "N/A")
+                                InfoItem(label = "Name", value = profile?.fullName + " " )
+                                InfoItem(label = "Email", value = profile?.email ?: "N/A")
+                                InfoItem(label = "Course", value = profile?.course ?: "N/A")
+                                InfoItem(label = "Semester", value = profile?.semester ?: "N/A")
+                                InfoItem(label = "Phone", value = profile?.phone ?: "N/A")
+                                InfoItem(label = "Backlogs", value = profile?.backlogs ?: "N/A")
+                                InfoItem(label = "Roll Number", value = profile?.rollNumber ?: "N/A")
 
                                 Spacer(modifier = Modifier.height(16.dp))
 
                                 DocumentItem(
                                     title = "Resume",
-                                    showEdit = true,
-                                    onViewClick = {},
-                                    onEditClick = {}
+                                    onViewClick = { viewDocument(profile?.resumeUrl ?: "") }
                                 )
                                 DocumentItem(
                                     title = "10th Marksheet",
-                                    onViewClick = {}
+                                    onViewClick = { viewDocument(profile?.tenthMarksheetUrl ?: "") }
                                 )
                                 DocumentItem(
                                     title = "12th Marksheet",
-                                    onViewClick = {},
+                                    onViewClick = { viewDocument(profile?.twelfthMarksheetUrl ?: "") },
                                     isLast = true
                                 )
                             }
@@ -201,18 +228,4 @@ fun AccountContent(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun AccountScreenPreview() {
-    AccountContent(
-        accountState = Result(
-            success = true,
-            successResult = Account(
-                id = "1",
-                name = "Test User",
-                email = "test@example.com",
-                university = "Test University"
-            )
-        )
-    )
-}
+

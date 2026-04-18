@@ -35,7 +35,7 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 
 @Composable
-fun BlacklistedAccountBarrier(
+fun BlacklistedAccountScreen(
     remark: String,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -133,8 +133,8 @@ fun BlacklistedAccountBarrier(
 
 @Preview(showBackground = true)
 @Composable
-private fun BlacklistedAccountBarrierPreview() {
-    BlacklistedAccountBarrier(
+private fun BlacklistedAccountScreenPreview() {
+    BlacklistedAccountScreen(
         remark = "Despite of several warnings, applied for Group B company even after already having a job offer from Group B company",
         onBackClick = {}
     )

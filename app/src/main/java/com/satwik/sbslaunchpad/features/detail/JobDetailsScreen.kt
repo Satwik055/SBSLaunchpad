@@ -1,3 +1,4 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
 package com.satwik.sbslaunchpad.features.detail
 
 import androidx.compose.foundation.background
@@ -33,6 +34,8 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.OnNeutralContainer
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
+import com.satwik.sbslaunchpad.core.util.getRemainingTime
+import com.satwik.sbslaunchpad.core.util.toReadableDate
 import com.satwik.sbslaunchpad.data.post.Post
 import com.satwik.sbslaunchpad.features.auth.local_component.ScrollShadows
 import com.satwik.sbslaunchpad.features.detail.local_components.JobDescriptionCard
@@ -64,15 +67,18 @@ fun JobDetailsScreen(
         } else if (result.success) {
             val post = result.successResult as Post
             JobDetailsContent(
-                title = post.profile,
+                title = post.jobProfile,
                 company = post.companyName,
                 group = post.group,
                 city = post.city,
                 applicants = post.applicants,
                 description = post.description,
-                compensation = post.amount,
+                compensation = post.amount.toString(),
                 requirements = post.requirements,
-                postedDate = post.postedDate,
+                deadline = post.deadline,
+                selectionProcess = post.selectionProcess,
+                createdAt = post.createdAt,
+                note = post.note,
                 companyLogoUrl = post.companyLogoUrl,
                 onBackClick = onBackClick,
                 onApplyClick = onApplyClick
@@ -96,7 +102,10 @@ private fun JobDetailsContent(
     description: String,
     compensation: String,
     requirements: String,
-    postedDate: String,
+    deadline: kotlin.time.Instant,
+    selectionProcess: String,
+    createdAt: kotlinx.datetime.Instant?,
+    note: String,
     companyLogoUrl: String?,
     onBackClick: () -> Unit,
     onApplyClick: () -> Unit
@@ -155,21 +164,27 @@ private fun JobDetailsContent(
                 JobDescriptionCard(
                     description = description,
                     compensation = compensation,
-                    requirements = requirements
+                    requirements = requirements,
+                    deadline = deadline.getRemainingTime(),
+                    selectionProcess = selectionProcess
                 )
 
-                NoteSection()
+                if (note.isNotEmpty()) {
+                    NoteSection(note = note)
+                }
 
-                Text(
-                    text = "Posted on: $postedDate",
-                    style = TextStyle(
-                        fontFamily = poppins,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 12.sp,
-                        color = TextSecondary
-                    ),
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
+                if (createdAt != null) {
+                    Text(
+                        text = "Posted on: ${createdAt.toReadableDate()}",
+                        style = TextStyle(
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp,
+                            color = TextSecondary
+                        ),
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
             }
         }
 

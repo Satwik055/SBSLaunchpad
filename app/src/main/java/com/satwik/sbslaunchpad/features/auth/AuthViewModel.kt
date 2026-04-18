@@ -8,7 +8,6 @@ import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.exceptions.RestException
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,11 +48,11 @@ class AuthViewModel(
         }
     }
 
-    fun register(email: String, phone: String, password: String, onSuccess: () -> Unit) {
+    fun register(name: String, email: String, phone: String, password: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
                 _uiState.update { it.copy(isLoading = true, error = "") }
-                authRepository.register(email, phone, password).getOrThrow()
+                authRepository.register(name, email, phone, password).getOrThrow()
                 _uiState.update { it.copy(isLoading = false, success = true) }
                 onSuccess()
             } catch (e: Exception) {
@@ -77,21 +76,13 @@ class AuthViewModel(
         }
     }
 
-    fun completeProfile(onSuccess: () -> Unit) {
+    fun logout(onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
-                _uiState.update { it.copy(isLoading = true, error = "") }
-                delay(1500) // Simulate network delay
-                _uiState.update { it.copy(isLoading = false, success = true) }
+                authRepository.logout()
                 onSuccess()
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = e.message ?: "Something went wrong"
-                    )
-                }
             }
         }
     }

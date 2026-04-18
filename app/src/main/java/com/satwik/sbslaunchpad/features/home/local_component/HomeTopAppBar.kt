@@ -1,6 +1,7 @@
 package com.satwik.sbslaunchpad.features.home.local_component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,8 +43,8 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 @Composable
 fun HomeTopAppBar(
     modifier: Modifier = Modifier,
-    userName: String = "Satwik Kumar",
-    userId: String = "20324947349",
+    firstName: String,
+    userId: String,
     notificationCount: Int = 2,
     onNotificationClick: () -> Unit = {},
     onProfileClick: () -> Unit = {}
@@ -58,15 +59,16 @@ fun HomeTopAppBar(
         // Profile Image using drawable
         Box(
             modifier = Modifier.Companion
-                .size(42.dp)
+                .size(45.dp)
                 .clip(CircleShape)
+                .border(width = 2.dp, color = BrandPrimary, shape = CircleShape)
                 .clickable { onProfileClick() },
             contentAlignment = Alignment.Companion.Center
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_profile),
                 contentDescription = "Profile",
-                modifier = Modifier.size(42.dp)
+                modifier = Modifier.size(45.dp)
             )
         }
 
@@ -77,7 +79,7 @@ fun HomeTopAppBar(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = userName,
+                text = firstName,
                 style = TextStyle(
                     fontFamily = fontFamily,
                     fontWeight = FontWeight.Companion.Normal,
@@ -137,6 +139,9 @@ fun HomeTopAppBar(
 @Composable
 fun HomeTopAppBarPreview() {
     SBSLaunchpadTheme {
-        HomeTopAppBar()
+        HomeTopAppBar(
+            firstName = "Satwik",
+            userId = "satwik@example.com"
+        )
     }
 }

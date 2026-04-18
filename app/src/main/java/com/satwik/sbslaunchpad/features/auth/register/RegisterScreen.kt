@@ -52,6 +52,7 @@ fun RegisterScreen(
     onContinueClick: () -> Unit = {},
     onLoginClick: () -> Unit = {}
 ) {
+    val nameState = rememberTextFieldState()
     val emailState = rememberTextFieldState()
     val phoneState = rememberTextFieldState()
     val passwordState = rememberTextFieldState()
@@ -89,6 +90,12 @@ fun RegisterScreen(
 
                 TextFeildCard {
                     LaunchpadTextFeild(
+                        state = nameState,
+                        semantic = ContentType.PersonFirstName,
+                        placeholder = "Enter your full name "
+                    )
+                    HorizontalDivider(thickness = 1.dp, color = SurfaceOutline)
+                    LaunchpadTextFeild(
                         state = emailState,
                         semantic = ContentType.EmailAddress,
                         placeholder = "Enter your email"
@@ -122,6 +129,7 @@ fun RegisterScreen(
                     loading = uiState.isLoading,
                     onClick = {
                         viewModel.register(
+                            name = nameState.text.toString(),
                             email = emailState.text.toString(),
                             phone = phoneState.text.toString(),
                             password = passwordState.text.toString(),
@@ -132,6 +140,8 @@ fun RegisterScreen(
                         .fillMaxWidth()
                         .padding(bottom = 24.dp)
                 )
+                Spacer(Modifier.height(40.dp))
+
 
                 Row(
                     modifier = Modifier

@@ -18,17 +18,22 @@ import androidx.compose.ui.unit.dp
 import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadJobPostCard
 import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
+import com.satwik.sbslaunchpad.core.util.getRemainingTime
+import com.satwik.sbslaunchpad.core.util.toReadableDate
 import com.satwik.sbslaunchpad.data.post.Post
+import com.satwik.sbslaunchpad.data.post.PostType
 import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
-import com.satwik.sbslaunchpad.features.home.HomeViewModel
+import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun JobsScreen(
-    viewModel: HomeViewModel,
     modifier: Modifier = Modifier,
+    viewModel: JobsViewModel = koinViewModel(),
     onJobClick: (String) -> Unit = {}
 ) {
-    val result by viewModel.jobsState.collectAsState()
+    val result by viewModel.uiState.collectAsState()
     val scrollState = rememberLazyListState()
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -49,14 +54,15 @@ fun JobsScreen(
                 ) {
                     items(jobs, key = { it.id }) { job ->
                         LaunchpadJobPostCard(
-                            jobProfile = job.profile,
+                            jobProfile = job.jobProfile,
                             companyName = job.companyName,
-                            deadline = job.deadline,
-                            group = job.group,
+                            deadline = job.deadline.getRemainingTime(),
+                            group = "Group ${job.group}",
                             city = job.city,
-                            applicants = job.applicants,
+                            applicants = "${job.applicants} Applicants",
                             salary = job.amount,
                             isApplied = false,
+                            postType = PostType.JOB,
                             onClick = { onJobClick(job.id) }
                         )
                     }

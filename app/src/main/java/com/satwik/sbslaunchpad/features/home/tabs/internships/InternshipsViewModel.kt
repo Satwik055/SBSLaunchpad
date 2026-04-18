@@ -1,10 +1,10 @@
-package com.satwik.sbslaunchpad.features.detail
+package com.satwik.sbslaunchpad.features.home.tabs.internships
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.satwik.sbslaunchpad.core.util.Result
 import com.satwik.sbslaunchpad.data.post.PostRepository
-import com.satwik.sbslaunchpad.data.post.Post
+import com.satwik.sbslaunchpad.data.post.PostType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,23 +15,21 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-class DetailViewModel(
+class InternshipsViewModel(
     private val repository: PostRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(Result(isLoading = true))
     val uiState: StateFlow<Result> = _uiState.asStateFlow()
 
-    fun loadDetail(id: String) {
-        repository.getPostDetail(id)
+    init {
+        fetchInternships()
+    }
+
+    fun fetchInternships() {
+        repository.getAllPostsByType(PostType.INTERNSHIP)
             .onStart { _uiState.value = Result(isLoading = true) }
-            .onEach { detail ->
-                if (detail != null) {
-                    _uiState.value = Result(success = true, successResult = detail)
-                } else {
-                    _uiState.value = Result(error = "Detail not found")
-                }
-            }
+            .onEach { internships -> _uiState.value = Result(success = true, successResult = internships) }
             .catch { e -> _uiState.value = Result(error = e.message ?: "Unknown Error") }
             .launchIn(viewModelScope)
     }

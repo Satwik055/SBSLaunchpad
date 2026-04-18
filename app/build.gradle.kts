@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.coil.compose)
+    implementation(libs.kotlinx.datetime)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -78,5 +79,7 @@ dependencies {
     implementation(libs.supabase.postgrest)
     implementation(libs.supabase.auth)
     implementation(libs.supabase.storage)
-    implementation(libs.ktor.client.android)
+    implementation(libs.supabase.realtime)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.utils)
 }

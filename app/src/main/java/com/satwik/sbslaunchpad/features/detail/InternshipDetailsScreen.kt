@@ -1,3 +1,4 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
 package com.satwik.sbslaunchpad.features.detail
 
 import androidx.compose.foundation.background
@@ -29,9 +30,12 @@ import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.components.InfoChip
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadButton
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
+import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.OnNeutralContainer
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
+import com.satwik.sbslaunchpad.core.util.getRemainingTime
+import com.satwik.sbslaunchpad.core.util.toReadableDate
 import com.satwik.sbslaunchpad.data.post.Post
 import com.satwik.sbslaunchpad.features.auth.local_component.ScrollShadows
 import com.satwik.sbslaunchpad.features.detail.local_components.JobDescriptionCard
@@ -59,11 +63,11 @@ fun InternshipDetailsScreen(
             .background(BackgroundDefault)
     ) {
         if (result.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = BrandPrimary)
         } else if (result.success) {
             val post = result.successResult as Post
             InternshipDetailsContent(
-                title = post.profile,
+                title = post.jobProfile,
                 company = post.companyName,
                 group = post.group,
                 city = post.city,
@@ -71,7 +75,10 @@ fun InternshipDetailsScreen(
                 description = post.description,
                 stipend = post.amount,
                 requirements = post.requirements,
-                postedDate = post.postedDate,
+                deadline = post.deadline,
+                selectionProcess = post.selectionProcess,
+                createdAt = post.createdAt,
+                note = post.note,
                 companyLogoUrl = post.companyLogoUrl,
                 onBackClick = onBackClick,
                 onApplyClick = onApplyClick
@@ -93,9 +100,12 @@ private fun InternshipDetailsContent(
     city: String,
     applicants: String,
     description: String,
-    stipend: String,
+    stipend: Int,
     requirements: String,
-    postedDate: String,
+    deadline: kotlin.time.Instant,
+    selectionProcess: String,
+    createdAt: kotlinx.datetime.Instant?,
+    note: String,
     companyLogoUrl: String?,
     onBackClick: () -> Unit,
     onApplyClick: () -> Unit
@@ -154,22 +164,28 @@ private fun InternshipDetailsContent(
                 // We are reusing JobDescriptionCard but passing stipend as compensation
                 JobDescriptionCard(
                     description = description,
-                    compensation = stipend,
-                    requirements = requirements
+                    compensation = stipend.toString(),
+                    requirements = requirements,
+                    deadline = deadline.getRemainingTime(),
+                    selectionProcess = selectionProcess
                 )
 
-                NoteSection()
+                if (note.isNotEmpty()) {
+                    NoteSection(note = note)
+                }
 
-                Text(
-                    text = "Posted on: $postedDate",
-                    style = TextStyle(
-                        fontFamily = poppins,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 12.sp,
-                        color = TextSecondary
-                    ),
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
+                if (createdAt != null) {
+                    Text(
+                        text = "Posted on: ${createdAt.toReadableDate()}",
+                        style = TextStyle(
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp,
+                            color = TextSecondary
+                        ),
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
             }
         }
 

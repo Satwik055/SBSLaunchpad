@@ -18,17 +18,22 @@ import androidx.compose.ui.unit.dp
 import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadJobPostCard
 import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
+import com.satwik.sbslaunchpad.core.util.getRemainingTime
+import com.satwik.sbslaunchpad.core.util.toReadableDate
 import com.satwik.sbslaunchpad.data.post.Post
+import com.satwik.sbslaunchpad.data.post.PostType
 import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
-import com.satwik.sbslaunchpad.features.home.HomeViewModel
+import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun InternshipsScreen(
-    viewModel: HomeViewModel,
     modifier: Modifier = Modifier,
+    viewModel: InternshipsViewModel = koinViewModel(),
     onInternshipClick: (String) -> Unit = {}
 ) {
-    val result by viewModel.internshipsState.collectAsState()
+    val result by viewModel.uiState.collectAsState()
     val scrollState = rememberLazyListState()
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -50,13 +55,14 @@ fun InternshipsScreen(
                 ) {
                     items(internships, key = { it.id }) { internship ->
                         LaunchpadJobPostCard(
-                            jobProfile = internship.profile,
+                            jobProfile = internship.jobProfile,
                             companyName = internship.companyName,
-                            deadline = internship.deadline,
-                            group = internship.group,
+                            deadline = internship.deadline.getRemainingTime(),
+                            group = "Group${internship.group}",
                             city = internship.city,
-                            applicants = internship.applicants,
+                            applicants = "${internship.applicants} Applicants ",
                             salary = internship.amount,
+                            postType = PostType.INTERNSHIP,
                             isApplied = false,
                             onClick = { onInternshipClick(internship.id) }
                         )

@@ -1,8 +1,11 @@
 package com.satwik.sbslaunchpad.core.designsystem.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
@@ -13,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,39 +43,54 @@ fun LaunchpadButton(
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
             containerColor = BrandPrimary,
-            contentColor = BrandOnPrimary
+            contentColor = BrandOnPrimary,
+            disabledContainerColor = BrandPrimary.copy(alpha = 0.6f),
+            disabledContentColor = BrandOnPrimary.copy(alpha = 0.5f)
         ),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 0.dp,
             pressedElevation = 0.dp
         )
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            if (loading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = Color.White,
-                    strokeWidth = 2.dp
-                )
-            } else {
+        when (loading) {
+            false -> {
                 Text(
                     text = text,
                     style = TextStyle(
                         fontFamily = fontFamily,
                         fontWeight = FontWeight.Medium,
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
                     )
+                )
+            }
+
+            true -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = BrandOnPrimary,
+                    strokeWidth = 2.dp
                 )
             }
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun LaunchpadButtonPreview() {
-    LaunchpadButton(
-        text = "Continue",
-        onClick = {}
-    )
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        LaunchpadButton(
+            text = "Continue",
+            onClick = {},
+            loading = false
+        )
+        LaunchpadButton(
+            text = "Continue",
+            onClick = {},
+            loading = true
+        )
+    }
 }

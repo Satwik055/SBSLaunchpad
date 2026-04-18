@@ -25,9 +25,14 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceOutline
 import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
+import com.satwik.sbslaunchpad.core.util.getRemainingTime
 import com.satwik.sbslaunchpad.data.post.Post
 import com.satwik.sbslaunchpad.data.post.PostType
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.plus
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
@@ -35,71 +40,72 @@ fun SearchScreen(
 ) {
     val searchState = rememberTextFieldState()
     val posts = remember {
+        val now = kotlin.time.Clock.System.now()
         listOf(
             Post(
                 id = "1",
-                profile = "Audit Assistant",
+                jobProfile = "Audit Assistant",
                 companyName = "Deloitte",
-                deadline = "3 Days",
+                deadline = now.plus(3, DateTimeUnit.DAY, kotlinx.datetime.TimeZone.currentSystemDefault()),
                 group = "Group A",
                 city = "Banglore",
                 applicants = "40 Applicants",
-                amount = "₹ 6,00,000 - ₹ 7,00,000",
+                amount = 800000,
                 type = PostType.JOB
             ),
             Post(
                 id = "2",
-                profile = "Key Accounts Manag...",
+                jobProfile = "Key Accounts Manag...",
                 companyName = "District",
-                deadline = "4 Days",
+                deadline = now.plus(4, DateTimeUnit.DAY, kotlinx.datetime.TimeZone.currentSystemDefault()),
                 group = "Group B",
                 city = "New Delhi",
                 applicants = "20 Applicants",
-                amount = "₹6,50,000",
+                amount = 600000,
                 type = PostType.JOB
             ),
             Post(
                 id = "3",
-                profile = "Associate",
+                jobProfile = "Associate",
                 companyName = "Daloopa",
-                deadline = "5 Days",
+                deadline = now.plus(5, DateTimeUnit.DAY, kotlinx.datetime.TimeZone.currentSystemDefault()),
                 group = "Group B",
                 city = "Mumbai",
                 applicants = "10 Applicants",
-                amount = "₹5,00,000",
+                amount = 670000,
                 type = PostType.JOB
             ),
             Post(
                 id = "4",
-                profile = "Reservation Associate",
+                jobProfile = "Reservation Associate",
                 companyName = "Oberoi Group",
-                deadline = "6 Days",
+                deadline = now.plus(6, DateTimeUnit.DAY, kotlinx.datetime.TimeZone.currentSystemDefault()),
                 group = "Group C",
                 city = "Mumbai",
                 applicants = "8 Applicants",
-                amount = "₹3,30,000",
+                amount = 324000,
                 type = PostType.JOB
             ),
             Post(
                 id = "7",
-                profile = "Data Analyst",
+                jobProfile = "Data Analyst",
                 companyName = "Amazon",
-                deadline = "2 Days",
+                deadline = now.plus(2, DateTimeUnit.DAY, kotlinx.datetime.TimeZone.currentSystemDefault()),
                 group = "Group A",
                 city = "Chennai",
                 applicants = "200 Applicants",
-                amount = "₹ 12,00,000 - ₹ 15,00,000",
+                amount = 120000,
                 type = PostType.JOB
             ),
             Post(
                 id = "9",
-                profile = "Full Stack Developer",
+                jobProfile = "Full Stack Developer",
                 companyName = "Zomato",
-                deadline = "1 Day",
+                deadline = now.plus(1, DateTimeUnit.DAY, kotlinx.datetime.TimeZone.currentSystemDefault()),
                 group = "Group B",
                 city = "Gurgaon",
                 applicants = "150 Applicants",
-                amount = "₹ 10,00,000 - ₹ 12,00,000",
+                amount = 120000,
                 type = PostType.JOB
             )
         )
@@ -112,7 +118,7 @@ fun SearchScreen(
                 emptyList<Post>()
             } else {
                 posts.filter {
-                    it.profile.contains(query, ignoreCase = true) ||
+                    it.jobProfile.contains(query, ignoreCase = true) ||
                             it.companyName.contains(query, ignoreCase = true)
                 }
             }
@@ -150,14 +156,15 @@ fun SearchScreen(
             ) {
                 items(filteredPosts, key = { it.id }) { post ->
                     LaunchpadJobPostCard(
-                        jobProfile = post.profile,
+                        jobProfile = post.jobProfile,
                         companyName = post.companyName,
-                        deadline = post.deadline,
+                        deadline = post.deadline.getRemainingTime(),
                         group = post.group,
                         city = post.city,
                         applicants = post.applicants,
                         salary = post.amount,
                         isApplied = false,
+                        postType = post.type,
                         onClick = { onJobClick(post.id) }
                     )
                 }

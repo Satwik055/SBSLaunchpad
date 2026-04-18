@@ -1,6 +1,8 @@
 package com.satwik.sbslaunchpad.data.post
 
+import kotlinx.coroutines.flow.Flow
+
 interface PostRepository {
-    suspend fun getAllPostsByType(type: PostType): List<Post>
-    suspend fun getPostDetail(id: String): Post?
+    fun getAllPostsByType(type: PostType): Flow<List<Post>>
+    fun getPostDetail(id: String): Flow<Post?>
 }

@@ -5,6 +5,8 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.flow.Flow
 import io.github.jan.supabase.auth.providers.builtin.Email
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 class SupabaseAuthRepositoryImpl(
     private val supabaseClient: SupabaseClient
@@ -24,13 +26,16 @@ class SupabaseAuthRepositoryImpl(
         }
     }
 
-    override suspend fun register(email: String, phone: String, password: String): Result<Unit> {
+    override suspend fun register(name: String, email: String, phone: String, password: String): Result<Unit> {
         return try {
             supabaseClient.auth.signUpWith(Email) {
                 this.email = email
                 this.password = password
+                data = buildJsonObject {
+                    put("full_name", name)
+                    put("phone", phone)
+                }
             }
-            // Note: Phone number storage might require additional database entry depending on your schema
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -45,7 +50,4 @@ class SupabaseAuthRepositoryImpl(
         }
     }
 
-    override fun isUserLoggedIn(): Boolean {
-        return supabaseClient.auth.currentSessionOrNull() != null
-    }
 }

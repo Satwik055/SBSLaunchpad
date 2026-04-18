@@ -7,21 +7,30 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
 import com.satwik.sbslaunchpad.core.navigation.NavigationRoot
+import com.satwik.sbslaunchpad.core.navigation.ScreenBlacklisted
+import com.satwik.sbslaunchpad.core.navigation.ScreenCompleteProfile
 import com.satwik.sbslaunchpad.core.navigation.ScreenHome
 import com.satwik.sbslaunchpad.core.navigation.ScreenLogin
+import com.satwik.sbslaunchpad.core.navigation.ScreenRegister
+import com.satwik.sbslaunchpad.core.navigation.ScreenVerificationPending
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -35,7 +44,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().apply {
             setKeepOnScreenCondition {
-                viewModel.isInitializing.value
+                viewModel.appState.value is AppState.Loading
             }
         }
         super.onCreate(savedInstanceState)
@@ -52,16 +61,51 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainContent() {
     val viewModel: MainViewModel = koinViewModel()
-    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
-    val isInitializing by viewModel.isInitializing.collectAsState()
+    val appState by viewModel.appState.collectAsState()
 
-    if (isInitializing) {
-        // You might want to show a splash screen or a loading indicator here
+    if (appState is AppState.Loading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = BrandPrimary)
+        }
         return
     }
 
-    val startDestination = if (isLoggedIn) ScreenHome else ScreenLogin
-    val backStack = rememberNavBackStack(startDestination)
+    val requiredDestination = remember(appState) {
+        when (appState) {
+            is AppState.LoginRequired -> ScreenLogin
+            is AppState.Blacklisted -> ScreenBlacklisted
+            is AppState.ProfileCompletionRequired -> ScreenCompleteProfile
+            is AppState.VerificationPending -> ScreenVerificationPending
+            is AppState.Authorized -> ScreenHome
+            else -> ScreenLogin
+        }
+    }
+
+    val backStack = rememberNavBackStack(requiredDestination)
+
+    LaunchedEffect(requiredDestination) {
+        val currentDestination = backStack.lastOrNull()
+        if (currentDestination != requiredDestination) {
+            val isCurrentDestinationAGate = currentDestination == ScreenLogin ||
+                    currentDestination == ScreenRegister ||
+                    currentDestination == ScreenCompleteProfile ||
+                    currentDestination == ScreenVerificationPending ||
+                    currentDestination == ScreenBlacklisted
+
+            if (requiredDestination != ScreenHome) {
+                val isHandlingLoginGate = requiredDestination == ScreenLogin && (currentDestination == ScreenLogin || currentDestination == ScreenRegister)
+
+                if (!isHandlingLoginGate) {
+                    backStack.clear()
+                    backStack.add(requiredDestination)
+                }
+            } else if (isCurrentDestinationAGate) {
+                backStack.clear()
+                backStack.add(ScreenHome)
+            }
+        }
+    }
+
     CompositionLocalProvider(LocalHorizontalAppPadding provides 16.dp) {
         NavigationRoot(
             modifier = Modifier.statusBarsPadding(),

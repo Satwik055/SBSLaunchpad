@@ -24,12 +24,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
@@ -45,6 +47,7 @@ fun HomeTopAppBar(
     modifier: Modifier = Modifier,
     firstName: String,
     userId: String,
+    profilePictureUrl: String? = null,
     notificationCount: Int = 2,
     onNotificationClick: () -> Unit = {},
     onProfileClick: () -> Unit = {}
@@ -56,7 +59,7 @@ fun HomeTopAppBar(
             .padding(horizontal = LocalHorizontalAppPadding.current),
         verticalAlignment = Alignment.Companion.CenterVertically
     ) {
-        // Profile Image using drawable
+        // Profile Image using Coil
         Box(
             modifier = Modifier.Companion
                 .size(45.dp)
@@ -65,10 +68,13 @@ fun HomeTopAppBar(
                 .clickable { onProfileClick() },
             contentAlignment = Alignment.Companion.Center
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_profile),
+            AsyncImage(
+                model = profilePictureUrl ?: R.drawable.ic_profile,
                 contentDescription = "Profile",
-                modifier = Modifier.size(45.dp)
+                modifier = Modifier.size(45.dp),
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(id = R.drawable.ic_profile),
+                error = painterResource(id = R.drawable.ic_profile)
             )
         }
 

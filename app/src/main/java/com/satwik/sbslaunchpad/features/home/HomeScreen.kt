@@ -52,6 +52,7 @@ fun HomeScreen(
     ) {
         HomeTopAppBar(
             firstName = profile?.fullName ?: "Guest",
+            profilePictureUrl = profile?.profileImageUrl,
             userId = profile?.email ?: "",
             onNotificationClick = onNotificationClick,
             onProfileClick = onProfileClick

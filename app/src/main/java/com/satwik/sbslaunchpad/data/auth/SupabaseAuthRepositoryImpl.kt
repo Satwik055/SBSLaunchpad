@@ -3,6 +3,7 @@ package com.satwik.sbslaunchpad.data.auth
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
+import io.github.jan.supabase.auth.user.UserInfo
 import kotlinx.coroutines.flow.Flow
 import io.github.jan.supabase.auth.providers.builtin.Email
 import kotlinx.serialization.json.buildJsonObject
@@ -13,6 +14,9 @@ class SupabaseAuthRepositoryImpl(
 ) : AuthRepository {
 
     override val sessionStatus: Flow<SessionStatus> = supabaseClient.auth.sessionStatus
+
+    override val currentUserId: String?
+        get() = supabaseClient.auth.currentUserOrNull()?.id
 
     override suspend fun login(email: String, password: String): Result<Unit> {
         return try {

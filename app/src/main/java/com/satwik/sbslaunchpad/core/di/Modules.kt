@@ -4,6 +4,8 @@ import com.satwik.sbslaunchpad.MainViewModel
 import com.satwik.sbslaunchpad.core.fileUploader.CloudFileUploader
 import com.satwik.sbslaunchpad.core.fileUploader.CloudFileUploaderSupabaseImpl
 import com.satwik.sbslaunchpad.core.util.Constants
+import com.satwik.sbslaunchpad.data.application_system.ApplicationSystem
+import com.satwik.sbslaunchpad.data.application_system.ApplicationSystemSupabaseImpl
 import com.satwik.sbslaunchpad.data.auth.AuthRepository
 import com.satwik.sbslaunchpad.data.auth.SupabaseAuthRepositoryImpl
 import com.satwik.sbslaunchpad.data.profile.ProfileRepository
@@ -52,6 +54,7 @@ val appModule = module {
     single<ProfileRepository> { SupabaseProfileRepositoryImpl(get(), get()) }
     single<AuthRepository> { SupabaseAuthRepositoryImpl(get()) }
     single <CloudFileUploader>{ CloudFileUploaderSupabaseImpl(get()) }
+    single<ApplicationSystem>{ ApplicationSystemSupabaseImpl(get()) }
 
     viewModelOf(::AuthViewModel)
     viewModelOf(::CompleteProfileViewModel)

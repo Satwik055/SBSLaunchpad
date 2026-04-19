@@ -21,6 +21,16 @@ data class Profile(
     val semester: String = "",
     val phone: String = "",
     val backlogs: String = "",
+    //--
+    val cgpa: Double =  0.0,
+    @SerialName("tenth_marks_percentage")
+    val tenthMarksPercentage: Double = 0.0,
+    @SerialName("twelfth_marks_percentage")
+    val twelfthMarksPercentage: Double = 0.0,
+    @SerialName("post_selected_in")
+    val postSelectedIn:String? = "",
+    val year:Int = 0,
+    //--
     @SerialName("roll_number")
     val rollNumber: String = "",
     @SerialName("exam_roll_number")

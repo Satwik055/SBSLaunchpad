@@ -158,7 +158,7 @@ fun SearchScreen(
                     LaunchpadJobPostCard(
                         jobProfile = post.jobProfile,
                         companyName = post.companyName,
-                        deadline = post.deadline.getRemainingTime(),
+                        deadline = post.deadline,
                         group = post.group,
                         city = post.city,
                         applicants = post.applicants,

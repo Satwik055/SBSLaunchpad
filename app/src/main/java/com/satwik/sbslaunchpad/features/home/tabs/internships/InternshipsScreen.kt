@@ -22,6 +22,7 @@ import com.satwik.sbslaunchpad.core.util.getRemainingTime
 import com.satwik.sbslaunchpad.core.util.toReadableDate
 import com.satwik.sbslaunchpad.data.post.Post
 import com.satwik.sbslaunchpad.data.post.PostType
+import com.satwik.sbslaunchpad.data.profile.Profile
 import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
@@ -34,10 +35,13 @@ fun InternshipsScreen(
     onInternshipClick: (String) -> Unit = {}
 ) {
     val result by viewModel.uiState.collectAsState()
+    val isAppliedLoading by viewModel.isAppliedLoading.collectAsState()
+    val appliedPostIds by viewModel.appliedPostIds.collectAsState()
+    val profile by viewModel.profile.collectAsState()
     val scrollState = rememberLazyListState()
 
     Box(modifier = modifier.fillMaxSize()) {
-        if (result.isLoading) {
+        if (result.isLoading || isAppliedLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = BrandPrimary)
         } else if (result.success) {
             @Suppress("UNCHECKED_CAST")
@@ -54,16 +58,18 @@ fun InternshipsScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(internships, key = { it.id }) { internship ->
+                        val isEligible = profile?.let { checkEligibility(it, internship) } ?: true
                         LaunchpadJobPostCard(
                             jobProfile = internship.jobProfile,
                             companyName = internship.companyName,
-                            deadline = internship.deadline.getRemainingTime(),
+                            deadline = internship.deadline,
                             group = "Group${internship.group}",
                             city = internship.city,
                             applicants = "${internship.applicants} Applicants ",
                             salary = internship.amount,
                             postType = PostType.INTERNSHIP,
-                            isApplied = false,
+                            isApplied = appliedPostIds.contains(internship.id),
+                            isEligible = isEligible,
                             onClick = { onInternshipClick(internship.id) }
                         )
                     }
@@ -76,4 +82,15 @@ fun InternshipsScreen(
             )
         }
     }
+}
+
+private fun checkEligibility(profile: Profile, post: Post): Boolean {
+    val courseMatch = post.reqCourses.isEmpty() || post.reqCourses.any { it.equals(profile.course, ignoreCase = true) }
+    val cgpaMatch = profile.cgpa >= post.reqCgpa
+    val yearMatch = post.reqYear.isEmpty() || post.reqYear.contains(profile.year)
+    val tenthMatch = profile.tenthMarksPercentage >= post.reqTenthMarksPercentage
+    val twelfthMatch = profile.twelfthMarksPercentage >= post.reqTwelfthMarksPercentage
+    val backlogMatch = post.reqBacklog == null || (profile.backlogs.toIntOrNull() ?: 0) <= post.reqBacklog
+
+    return courseMatch && cgpaMatch && yearMatch && tenthMatch && twelfthMatch && backlogMatch
 }

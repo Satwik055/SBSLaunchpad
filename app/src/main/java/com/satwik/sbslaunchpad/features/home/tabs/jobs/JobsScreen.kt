@@ -22,6 +22,7 @@ import com.satwik.sbslaunchpad.core.util.getRemainingTime
 import com.satwik.sbslaunchpad.core.util.toReadableDate
 import com.satwik.sbslaunchpad.data.post.Post
 import com.satwik.sbslaunchpad.data.post.PostType
+import com.satwik.sbslaunchpad.data.profile.Profile
 import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
@@ -34,10 +35,13 @@ fun JobsScreen(
     onJobClick: (String) -> Unit = {}
 ) {
     val result by viewModel.uiState.collectAsState()
+    val isAppliedLoading by viewModel.isAppliedLoading.collectAsState()
+    val appliedPostIds by viewModel.appliedPostIds.collectAsState()
+    val profile by viewModel.profile.collectAsState()
     val scrollState = rememberLazyListState()
 
     Box(modifier = modifier.fillMaxSize()) {
-        if (result.isLoading) {
+        if (result.isLoading || isAppliedLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = BrandPrimary)
         } else if (result.success) {
             val jobs = result.successResult as? List<Post> ?: emptyList()
@@ -53,15 +57,17 @@ fun JobsScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(jobs, key = { it.id }) { job ->
+                        val isEligible = profile?.let { checkEligibility(it, job) } ?: true
                         LaunchpadJobPostCard(
                             jobProfile = job.jobProfile,
                             companyName = job.companyName,
-                            deadline = job.deadline.getRemainingTime(),
+                            deadline = job.deadline,
                             group = "Group ${job.group}",
                             city = job.city,
                             applicants = "${job.applicants} Applicants",
                             salary = job.amount,
-                            isApplied = false,
+                            isApplied = appliedPostIds.contains(job.id),
+                            isEligible = isEligible,
                             postType = PostType.JOB,
                             onClick = { onJobClick(job.id) }
                         )
@@ -75,4 +81,15 @@ fun JobsScreen(
             )
         }
     }
+}
+
+private fun checkEligibility(profile: Profile, post: Post): Boolean {
+    val courseMatch = post.reqCourses.isEmpty() || post.reqCourses.any { it.equals(profile.course, ignoreCase = true) }
+    val cgpaMatch = profile.cgpa >= post.reqCgpa
+    val yearMatch = post.reqYear.isEmpty() || post.reqYear.contains(profile.year)
+    val tenthMatch = profile.tenthMarksPercentage >= post.reqTenthMarksPercentage
+    val twelfthMatch = profile.twelfthMarksPercentage >= post.reqTwelfthMarksPercentage
+    val backlogMatch = post.reqBacklog == null || (profile.backlogs.toIntOrNull() ?: 0) <= post.reqBacklog
+
+    return courseMatch && cgpaMatch && yearMatch && tenthMatch && twelfthMatch && backlogMatch
 }

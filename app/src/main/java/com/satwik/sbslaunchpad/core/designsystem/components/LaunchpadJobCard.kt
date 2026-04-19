@@ -28,14 +28,26 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.theme.*
+import com.satwik.sbslaunchpad.core.util.getRemainingTime
 import com.satwik.sbslaunchpad.data.post.PostType
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import java.util.Locale
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun LaunchpadJobPostCard(
     jobProfile: String,
     companyName: String,
-    deadline: String,
+    deadline: Instant,
     group: String,
     city: String,
     applicants: String,
@@ -43,6 +55,7 @@ fun LaunchpadJobPostCard(
     isApplied: Boolean,
     postType: PostType,
     modifier: Modifier = Modifier,
+    isEligible: Boolean = true,
     companyLogoUrl: String? = null,
     onClick: () -> Unit = {},
 ) {
@@ -73,16 +86,19 @@ fun LaunchpadJobPostCard(
 
             if (isApplied) {
                 AppliedBanner()
+            } else if (!isEligible) {
+                IneligibleBanner()
             }
         }
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 private fun JobPostCardBody(
     jobProfile: String,
     companyName: String,
-    deadline: String,
+    deadline: Instant,
     group: String,
     city: String,
     applicants: String,
@@ -224,8 +240,22 @@ private fun JobPostCardBody(
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
-private fun DeadlineBadge(deadline: String) {
+private fun DeadlineBadge(deadline: Instant) {
+    var remainingTime by remember(deadline) { mutableStateOf(deadline.getRemainingTime()) }
+
+    LaunchedEffect(deadline) {
+        while (true) {
+            remainingTime = deadline.getRemainingTime()
+            if (remainingTime.contains(":")) {
+                delay(1.seconds)
+            } else {
+                delay(60.seconds)
+            }
+        }
+    }
+
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(10.dp))
@@ -241,7 +271,7 @@ private fun DeadlineBadge(deadline: String) {
                 .background(Color.Red),
         )
         Text(
-            text = deadline,
+            text = remainingTime,
             style = TextStyle(
                 fontFamily = poppins,
                 fontWeight = FontWeight.Medium,
@@ -309,6 +339,36 @@ private fun AppliedBanner() {
     }
 }
 
+@Composable
+private fun IneligibleBanner() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(49.dp)
+            .background(Color.Red)
+            .padding(horizontal = 21.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_caution_outline),
+            contentDescription = "Not Eligible",
+            tint = Color.White,
+            modifier = Modifier.size(18.dp),
+        )
+        Text(
+            text = "Not Eligible",
+            style = TextStyle(
+                fontFamily = poppins,
+                fontWeight = FontWeight.Normal,
+                fontSize = 13.sp
+            ),
+            color = Color.White,
+        )
+    }
+}
+
+@OptIn(ExperimentalTime::class)
 @Preview
 @Composable
 fun LaunchpadJobPostCardPreview() {
@@ -317,7 +377,7 @@ fun LaunchpadJobPostCardPreview() {
             LaunchpadJobPostCard(
                 jobProfile = "Audit Assistant",
                 companyName = "Deloitte",
-                deadline = "3 Days",
+                deadline = Instant.fromEpochSeconds(Clock.System.now().epochSeconds + 3 * 24 * 3600),
                 group = "Group B",
                 city = "Delhi",
                 applicants = "42 Applicants",

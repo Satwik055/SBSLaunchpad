@@ -22,13 +22,26 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.satwik.sbslaunchpad.core.util.getRemainingTime
+import com.satwik.sbslaunchpad.core.util.toReadableDateTime
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
+
+@OptIn(ExperimentalTime::class)
 @Composable
 fun JobDescriptionCard(
     modifier: Modifier = Modifier,
     description: String,
     compensation: String,
     requirements: String,
-    deadline: String,
+    deadline: Instant,
     selectionProcess: String
 ) {
     Column(
@@ -61,7 +74,7 @@ fun JobDescriptionCard(
 
         DetailSection(
             title = "Deadline",
-            content = deadline
+            content = deadline.toReadableDateTime()
         )
 
         DetailSection(

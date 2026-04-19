@@ -28,5 +28,17 @@ data class Post(
     @SerialName("selection_process")
     val selectionProcess: String = "",
     @SerialName("created_at")
-    val createdAt: Instant? = null
+    val createdAt: Instant? = null,
+    @SerialName("req_cgpa")
+    val reqCgpa: Double = 0.0,
+    @SerialName("req_year")
+    val reqYear: List<Int> = emptyList(),
+    @SerialName("req_tenth_marks_percentage")
+    val reqTenthMarksPercentage: Double = 0.0,
+    @SerialName("req_twelfth_marks_percentage")
+    val reqTwelfthMarksPercentage: Double = 0.0,
+    @SerialName("req_courses")
+    val reqCourses: List<String> = emptyList(),
+    @SerialName("req_backlog")
+    val reqBacklog: Int? = 0
 )

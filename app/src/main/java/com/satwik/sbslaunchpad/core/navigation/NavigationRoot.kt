@@ -110,6 +110,7 @@ fun NavigationRoot(modifier: Modifier = Modifier, backStack: MutableList<NavKey>
                 is ScreenSearch -> {
                     NavEntry(key = key) {
                         SearchScreen(
+                            onBackClick = { backStack.remove(key) },
                             onJobClick = { id -> backStack.add(ScreenJobDetail(id = id)) }
                         )
                     }

@@ -20,6 +20,7 @@ import com.satwik.sbslaunchpad.features.barriers.ProfileVerificationPendingViewM
 import com.satwik.sbslaunchpad.features.home.tabs.jobs.JobsViewModel
 import com.satwik.sbslaunchpad.features.home.tabs.internships.InternshipsViewModel
 import com.satwik.sbslaunchpad.features.detail.DetailViewModel
+import com.satwik.sbslaunchpad.features.search.presentation.SearchViewModel
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.logging.LogLevel
@@ -62,6 +63,7 @@ val appModule = module {
     viewModelOf(::JobsViewModel)
     viewModelOf(::InternshipsViewModel)
     viewModelOf(::DetailViewModel)
+    viewModelOf(::SearchViewModel)
     viewModelOf(::AccountViewModel)
     viewModelOf(::BlacklistedAccountViewModel)
     viewModelOf(::ProfileVerificationPendingViewModel)

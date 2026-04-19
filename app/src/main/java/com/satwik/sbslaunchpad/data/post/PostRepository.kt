@@ -6,5 +6,5 @@ interface PostRepository {
     fun getAllPostsByType(type: PostType): Flow<List<Post>>
     fun getPostById(id: String): Flow<Post?>
 
-    fun searchPost(query: String): Flow<List<Post>>)
+    suspend fun searchPost(query: String): List<Post>
 }

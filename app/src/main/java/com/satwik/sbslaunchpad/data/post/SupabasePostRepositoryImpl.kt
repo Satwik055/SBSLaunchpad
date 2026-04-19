@@ -5,10 +5,8 @@ import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.filter.FilterOperation
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
-import io.github.jan.supabase.postgrest.query.filter.PostgrestFilterBuilder
 import io.github.jan.supabase.realtime.selectAsFlow
 import io.github.jan.supabase.realtime.selectSingleValueAsFlow
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 
 class SupabasePostRepositoryImpl(
@@ -34,7 +32,17 @@ class SupabasePostRepositoryImpl(
         )
     }
 
-    override fun searchPost(query: String): Flow<List<Post>> {
-        TODO("Not yet implemented")
+    override suspend fun searchPost(query: String): List<Post> {
+        val result = client.postgrest.from("post")
+            .select {
+                filter {
+                    or {
+                        ilike("job_profile", "%$query%")
+                        ilike("company_name", "%$query%")
+                    }
+                }
+            }
+            .decodeList<Post>()
+        return result
     }
 }

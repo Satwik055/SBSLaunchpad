@@ -32,98 +32,28 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.plus
 import kotlin.time.ExperimentalTime
 
+import androidx.compose.runtime.collectAsState
+import com.satwik.sbslaunchpad.features.search.presentation.SearchViewModel
+import org.koin.compose.viewmodel.koinViewModel
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.Alignment
+import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
+
 @OptIn(ExperimentalTime::class)
 @Composable
 fun SearchScreen(
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: SearchViewModel = koinViewModel(),
     onJobClick: (String) -> Unit = {}
 ) {
-    val searchState = rememberTextFieldState()
-    val posts = remember {
-        val now = kotlin.time.Clock.System.now()
-        listOf(
-            Post(
-                id = "1",
-                jobProfile = "Audit Assistant",
-                companyName = "Deloitte",
-                deadline = now.plus(3, DateTimeUnit.DAY, kotlinx.datetime.TimeZone.currentSystemDefault()),
-                group = "Group A",
-                city = "Banglore",
-                applicants = "40 Applicants",
-                amount = 800000,
-                type = PostType.JOB
-            ),
-            Post(
-                id = "2",
-                jobProfile = "Key Accounts Manag...",
-                companyName = "District",
-                deadline = now.plus(4, DateTimeUnit.DAY, kotlinx.datetime.TimeZone.currentSystemDefault()),
-                group = "Group B",
-                city = "New Delhi",
-                applicants = "20 Applicants",
-                amount = 600000,
-                type = PostType.JOB
-            ),
-            Post(
-                id = "3",
-                jobProfile = "Associate",
-                companyName = "Daloopa",
-                deadline = now.plus(5, DateTimeUnit.DAY, kotlinx.datetime.TimeZone.currentSystemDefault()),
-                group = "Group B",
-                city = "Mumbai",
-                applicants = "10 Applicants",
-                amount = 670000,
-                type = PostType.JOB
-            ),
-            Post(
-                id = "4",
-                jobProfile = "Reservation Associate",
-                companyName = "Oberoi Group",
-                deadline = now.plus(6, DateTimeUnit.DAY, kotlinx.datetime.TimeZone.currentSystemDefault()),
-                group = "Group C",
-                city = "Mumbai",
-                applicants = "8 Applicants",
-                amount = 324000,
-                type = PostType.JOB
-            ),
-            Post(
-                id = "7",
-                jobProfile = "Data Analyst",
-                companyName = "Amazon",
-                deadline = now.plus(2, DateTimeUnit.DAY, kotlinx.datetime.TimeZone.currentSystemDefault()),
-                group = "Group A",
-                city = "Chennai",
-                applicants = "200 Applicants",
-                amount = 120000,
-                type = PostType.JOB
-            ),
-            Post(
-                id = "9",
-                jobProfile = "Full Stack Developer",
-                companyName = "Zomato",
-                deadline = now.plus(1, DateTimeUnit.DAY, kotlinx.datetime.TimeZone.currentSystemDefault()),
-                group = "Group B",
-                city = "Gurgaon",
-                applicants = "150 Applicants",
-                amount = 120000,
-                type = PostType.JOB
-            )
-        )
-    }
+    val searchState = viewModel.searchState
+    val filteredPosts = viewModel.searchResults
+    val isSearching = viewModel.isSearching
 
-    val filteredPosts by remember {
-        derivedStateOf {
-            val query = searchState.text.toString()
-            if (query.isEmpty()) {
-                emptyList<Post>()
-            } else {
-                posts.filter {
-                    it.jobProfile.contains(query, ignoreCase = true) ||
-                            it.companyName.contains(query, ignoreCase = true)
-                }
-            }
-        }
-    }
 
     val scrollState = rememberLazyListState()
 
@@ -135,14 +65,20 @@ fun SearchScreen(
         LaunchpadSearchBar(
             state = searchState,
             placeholder = "Search jobs...",
-            leadingButtonOnClick = { /* Handle back click */ },
+            leadingButtonOnClick = onBackClick,
             trailButtonOnClick = { searchState.edit { replace(0, length, "") } },
             leadingButtonIcon = R.drawable.ic_arrow,
             trailButtonIcon = R.drawable.ic_cross,
             autoFocus = true
         )
-        
+
         HorizontalDivider(thickness = 1.dp, color = SurfaceOutline)
+
+        if (isSearching) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = BrandPrimary)
+            }
+        }
 
         LazyScrollShadows(scrollState = scrollState) {
             LazyColumn(
@@ -178,6 +114,6 @@ fun SearchScreen(
 @Composable
 private fun SearchScreenPreview() {
     SBSLaunchpadTheme {
-        SearchScreen()
+        SearchScreen(onBackClick = {})
     }
 }

@@ -39,6 +39,9 @@ class JobsViewModel(
     private val _profile = MutableStateFlow<Profile?>(null)
     val profile: StateFlow<Profile?> = _profile.asStateFlow()
 
+    private val _applicantsCounts = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val applicantsCounts: StateFlow<Map<String, Int>> = _applicantsCounts.asStateFlow()
+
     init {
         fetchJobs()
         fetchApplications()
@@ -71,8 +74,23 @@ class JobsViewModel(
     fun fetchJobs() {
         postRepository.getAllPostsByType(PostType.JOB)
             .onStart { _uiState.value = Result(isLoading = true) }
-            .onEach { jobs -> _uiState.value = Result(success = true, successResult = jobs) }
+            .onEach { jobs ->
+                _uiState.value = Result(success = true, successResult = jobs)
+                jobs.forEach { job ->
+                    observeApplicantsCount(job.id)
+                }
+            }
             .catch { e -> _uiState.value = Result(error = e.message ?: "Unknown Error") }
+            .launchIn(viewModelScope)
+    }
+
+    private fun observeApplicantsCount(postId: String) {
+        applicationSystem.getAllApplicants(postId)
+            .onEach { count ->
+                _applicantsCounts.value = _applicantsCounts.value.toMutableMap().apply {
+                    put(postId, count)
+                }
+            }
             .launchIn(viewModelScope)
     }
 }

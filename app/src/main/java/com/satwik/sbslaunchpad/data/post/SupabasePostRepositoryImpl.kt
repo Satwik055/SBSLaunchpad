@@ -5,6 +5,7 @@ import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.filter.FilterOperation
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
+import io.github.jan.supabase.postgrest.query.filter.PostgrestFilterBuilder
 import io.github.jan.supabase.realtime.selectAsFlow
 import io.github.jan.supabase.realtime.selectSingleValueAsFlow
 import kotlinx.coroutines.Job
@@ -24,12 +25,16 @@ class SupabasePostRepositoryImpl(
 
 
     @OptIn(SupabaseExperimental::class)
-    override fun getPostDetail(id: String): Flow<Post?> {
+    override fun getPostById(id: String): Flow<Post?> {
         return client.postgrest.from("post").selectSingleValueAsFlow(
             primaryKey = Post::id,
             filter = {
                 eq("id", id)
             }
         )
+    }
+
+    override fun searchPost(query: String): Flow<List<Post>> {
+        TODO("Not yet implemented")
     }
 }

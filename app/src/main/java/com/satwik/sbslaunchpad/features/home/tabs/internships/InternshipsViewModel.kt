@@ -38,6 +38,12 @@ class InternshipsViewModel(
     private val _profile = MutableStateFlow<Profile?>(null)
     val profile: StateFlow<Profile?> = _profile.asStateFlow()
 
+    private val _applicationState = MutableStateFlow(Result(isLoading = false))
+    val applicationState: StateFlow<Result> = _applicationState.asStateFlow()
+
+    private val _applicantsCounts = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val applicantsCounts: StateFlow<Map<String, Int>> = _applicantsCounts.asStateFlow()
+
     init {
         fetchInternships()
         fetchApplications()
@@ -70,8 +76,41 @@ class InternshipsViewModel(
     fun fetchInternships() {
         repository.getAllPostsByType(PostType.INTERNSHIP)
             .onStart { _uiState.value = Result(isLoading = true) }
-            .onEach { internships -> _uiState.value = Result(success = true, successResult = internships) }
+            .onEach { internships ->
+                _uiState.value = Result(success = true, successResult = internships)
+                internships.forEach { internship ->
+                    observeApplicantsCount(internship.id)
+                }
+            }
             .catch { e -> _uiState.value = Result(error = e.message ?: "Unknown Error") }
             .launchIn(viewModelScope)
+    }
+
+    private fun observeApplicantsCount(postId: String) {
+        applicationSystem.getAllApplicants(postId)
+            .onEach { count ->
+                _applicantsCounts.value = _applicantsCounts.value.toMutableMap().apply {
+                    put(postId, count)
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    fun applyForPost(postId: String) {
+        val userId = authRepository.currentUserId
+        if (userId == null) {
+            _applicationState.value = Result(error = "User not logged in")
+            return
+        }
+
+        viewModelScope.launch {
+            _applicationState.value = Result(isLoading = true)
+            try {
+                applicationSystem.sendApplication(postId, userId)
+                _applicationState.value = Result(success = true)
+            } catch (e: Exception) {
+                _applicationState.value = Result(error = e.message ?: "Failed to send application")
+            }
+        }
     }
 }

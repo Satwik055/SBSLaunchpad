@@ -4,5 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface PostRepository {
     fun getAllPostsByType(type: PostType): Flow<List<Post>>
-    fun getPostDetail(id: String): Flow<Post?>
+    fun getPostById(id: String): Flow<Post?>
+
+    fun searchPost(query: String): Flow<List<Post>>)
 }

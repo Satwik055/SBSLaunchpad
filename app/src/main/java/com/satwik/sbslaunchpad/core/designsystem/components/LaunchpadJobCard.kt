@@ -283,34 +283,6 @@ private fun DeadlineBadge(deadline: Instant) {
 }
 
 @Composable
-fun InfoChip(
-    label: String,
-    modifier: Modifier = Modifier,
-    leadingIcon: (@Composable () -> Unit)? = null,
-) {
-    Row(
-        modifier = modifier
-            .height(32.dp)
-            .clip(RoundedCornerShape(19.dp))
-            .background(NeutralContainer)
-            .padding(horizontal = 10.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        leadingIcon?.invoke()
-        Text(
-            text = label,
-            style = TextStyle(
-                fontFamily = poppins,
-                fontWeight = FontWeight.Normal,
-                fontSize = 12.sp
-            ),
-            color = OnNeutralContainer,
-        )
-    }
-}
-
-@Composable
 private fun AppliedBanner() {
     Row(
         modifier = Modifier

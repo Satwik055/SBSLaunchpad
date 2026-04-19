@@ -74,6 +74,7 @@ fun JobDetailsScreen(
     val isAppliedLoading by viewModel.isAppliedLoading.collectAsState()
     val isEligible by viewModel.isEligible.collectAsState()
     val eligibilityReasons by viewModel.eligibilityReasons.collectAsState()
+    val applicantsCount by viewModel.applicantsCount.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -103,7 +104,7 @@ fun JobDetailsScreen(
                 company = post.companyName,
                 group = post.group,
                 city = post.city,
-                applicants = post.applicants,
+                applicants = applicantsCount.toString(),
                 description = post.description,
                 compensation = post.amount.toString(),
                 requirements = post.requirements,
@@ -264,7 +265,7 @@ private fun JobDetailsContent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     InfoChip(
-                        label = group,
+                        label = "Group $group",
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(R.drawable.ic_stack),

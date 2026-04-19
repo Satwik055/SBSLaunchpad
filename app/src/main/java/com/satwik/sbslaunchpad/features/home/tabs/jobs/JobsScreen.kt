@@ -37,6 +37,7 @@ fun JobsScreen(
     val result by viewModel.uiState.collectAsState()
     val isAppliedLoading by viewModel.isAppliedLoading.collectAsState()
     val appliedPostIds by viewModel.appliedPostIds.collectAsState()
+    val applicantsCounts by viewModel.applicantsCounts.collectAsState()
     val profile by viewModel.profile.collectAsState()
     val scrollState = rememberLazyListState()
 
@@ -58,13 +59,14 @@ fun JobsScreen(
                 ) {
                     items(jobs, key = { it.id }) { job ->
                         val isEligible = profile?.let { checkEligibility(it, job) } ?: true
+                        val liveApplicants = applicantsCounts[job.id] ?: job.applicants.toIntOrNull() ?: 0
                         LaunchpadJobPostCard(
                             jobProfile = job.jobProfile,
                             companyName = job.companyName,
                             deadline = job.deadline,
                             group = "Group ${job.group}",
                             city = job.city,
-                            applicants = "${job.applicants} Applicants",
+                            applicants = "$liveApplicants Applicants",
                             salary = job.amount,
                             isApplied = appliedPostIds.contains(job.id),
                             isEligible = isEligible,

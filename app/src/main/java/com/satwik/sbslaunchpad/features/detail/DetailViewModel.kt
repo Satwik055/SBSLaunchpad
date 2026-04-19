@@ -44,8 +44,11 @@ class DetailViewModel(
     private val _eligibilityReasons = MutableStateFlow<List<String>>(emptyList())
     val eligibilityReasons: StateFlow<List<String>> = _eligibilityReasons.asStateFlow()
 
+    private val _applicantsCount = MutableStateFlow(0)
+    val applicantsCount: StateFlow<Int> = _applicantsCount.asStateFlow()
+
     fun loadDetail(id: String) {
-        repository.getPostDetail(id)
+        repository.getPostById(id)
             .onStart {
                 _uiState.value = Result(isLoading = true)
                 _isAppliedLoading.value = true
@@ -54,6 +57,7 @@ class DetailViewModel(
                 if (detail != null) {
                     _uiState.value = Result(success = true, successResult = detail)
                     checkEligibilityAndApplication(detail)
+                    loadApplicantsCount(id)
                 } else {
                     _uiState.value = Result(error = "Detail not found")
                     _isAppliedLoading.value = false
@@ -115,6 +119,14 @@ class DetailViewModel(
         if (!backlogMatch) reasons.add("Backlogs exceed the limit. Maximum allowed: ${post.reqBacklog}")
 
         return (reasons.isEmpty()) to reasons
+    }
+
+    private fun loadApplicantsCount(postId: String) {
+        applicationSystem.getAllApplicants(postId)
+            .onEach { count ->
+                _applicantsCount.value = count
+            }
+            .launchIn(viewModelScope)
     }
 
     fun applyForPost(postId: String) {

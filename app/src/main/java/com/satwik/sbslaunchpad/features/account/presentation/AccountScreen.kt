@@ -21,6 +21,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +41,7 @@ import coil.request.ImageRequest
 import com.satwik.sbslaunchpad.features.main.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTopAppBar
+import com.satwik.sbslaunchpad.core.designsystem.components.LogoutConfirmationDialog
 import com.satwik.sbslaunchpad.core.designsystem.components.customShadow
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.ElevationStrength
@@ -59,15 +63,24 @@ fun AccountScreen(
     onLogoutClick: () -> Unit = {}
 ) {
     val accountState by viewModel.accountState.collectAsStateWithLifecycle()
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    if (showLogoutDialog) {
+        LogoutConfirmationDialog(
+            onConfirm = {
+                showLogoutDialog = false
+                viewModel.logout()
+                onLogoutClick()
+            },
+            onDismiss = { showLogoutDialog = false }
+        )
+    }
 
     AccountContent(
         modifier = modifier,
         accountState = accountState,
         onBackClick = onBackClick,
-        onLogoutClick = {
-            viewModel.logout()
-            onLogoutClick()
-        },
+        onLogoutClick = { showLogoutDialog = true },
     )
 }
 

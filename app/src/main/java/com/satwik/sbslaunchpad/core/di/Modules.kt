@@ -1,5 +1,6 @@
 package com.satwik.sbslaunchpad.core.di
 
+import com.google.firebase.messaging.FirebaseMessaging
 import com.satwik.sbslaunchpad.features.main.MainViewModel
 import com.satwik.sbslaunchpad.core.fileUploader.CloudFileUploader
 import com.satwik.sbslaunchpad.core.fileUploader.CloudFileUploaderSupabaseImpl
@@ -45,6 +46,7 @@ import org.koin.dsl.module
 
 val appModule = module {
     single { CoroutineScope(Dispatchers.IO + SupervisorJob()) }
+    single { FirebaseMessaging.getInstance() }
 
     single {
         createSupabaseClient(
@@ -60,9 +62,10 @@ val appModule = module {
         }
     }
 
+    single {  }
     single<PostRepository> { SupabasePostRepositoryImpl(get()) }
     single<ProfileRepository> { SupabaseProfileRepositoryImpl(get(), get()) }
-    single<AuthRepository> { SupabaseAuthRepositoryImpl(get()) }
+    single<AuthRepository> { SupabaseAuthRepositoryImpl(get(), get()) }
     single <CloudFileUploader>{ CloudFileUploaderSupabaseImpl(get()) }
     single<ApplicationRepository>{ ApplicationRepositoryImpl(get()) }
     single<ThreadRepository> { ThreadRepositorySupabaseImpl(get()) }

@@ -17,10 +17,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.satwik.sbslaunchpad" />
+                  <option name="mobileSdkAppId" value="1:635976915809:android:08d503944877813dab0320" />
+                  <option name="projectId" value="sbs-launchpad" />
+                  <option name="projectNumber" value="635976915809" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

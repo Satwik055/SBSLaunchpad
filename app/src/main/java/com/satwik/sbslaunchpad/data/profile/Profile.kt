@@ -8,6 +8,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Profile(
     val id: String,
+    @SerialName("fcm_token")
+    val fcmToken: String = "",
     @SerialName("full_name")
     val fullName: String,
     val email: String,

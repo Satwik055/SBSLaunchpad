@@ -31,6 +31,7 @@ import com.satwik.sbslaunchpad.core.navigation.ScreenHome
 import com.satwik.sbslaunchpad.core.navigation.ScreenLogin
 import com.satwik.sbslaunchpad.core.navigation.ScreenRegister
 import com.satwik.sbslaunchpad.core.navigation.ScreenVerificationPending
+import com.satwik.sbslaunchpad.core.pushNotification.PushNotificationService
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.compose.viewmodel.koinViewModel
 

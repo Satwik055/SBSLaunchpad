@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "635976915809",
+    "project_id": "sbs-launchpad",
+    "storage_bucket": "sbs-launchpad.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:635976915809:android:08d503944877813dab0320",
+        "android_client_info": {
+          "package_name": "com.satwik.sbslaunchpad"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJ4YLWPqrXiy8eQYnKFseAjIGBcUpjEpE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

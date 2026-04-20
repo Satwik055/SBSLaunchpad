@@ -40,7 +40,9 @@ fun LaunchpadButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     loading: Boolean = false,
-    leadingIcon: ImageVector? = null
+    leadingIcon: ImageVector? = null,
+    containerColor: Color = BrandPrimary,
+    contentColor: Color = BrandOnPrimary
 ) {
     Button(
         onClick = onClick,
@@ -50,10 +52,10 @@ fun LaunchpadButton(
         enabled = enabled && !loading,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = BrandPrimary,
-            contentColor = BrandOnPrimary,
-            disabledContainerColor = BrandPrimary.copy(alpha = 0.6f),
-            disabledContentColor = BrandOnPrimary.copy(alpha = 0.5f)
+            containerColor = containerColor,
+            contentColor = contentColor,
+            disabledContainerColor = containerColor.copy(alpha = 0.6f),
+            disabledContentColor = contentColor.copy(alpha = 0.5f)
         ),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 0.dp,
@@ -88,7 +90,7 @@ fun LaunchpadButton(
             true -> {
                 CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
-                    color = BrandOnPrimary,
+                    color = contentColor,
                     strokeWidth = 2.dp
                 )
             }

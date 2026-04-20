@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
-import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadNoticeItem
 import com.satwik.sbslaunchpad.core.designsystem.components.customShadow
 import com.satwik.sbslaunchpad.core.designsystem.theme.DefaultElevation
 import com.satwik.sbslaunchpad.core.designsystem.theme.ElevationStrength
@@ -30,12 +29,14 @@ fun NoticesScreen(
         NoticeItemData(
             title = "Final Warning",
             date = "2nd April",
-            description = "Students are advised to not use fake internship certificates in their resumes. Once caught, they will be blacklisted permanently from the placements."
+            description = "Students are advised to not use fake internship certificates in their resumes. Once caught, they will be blacklisted permanently from the placements.",
+            isNew = true
         ),
         NoticeItemData(
             title = "Holiday Notice",
             date = "5th April",
-            description = "The college will remain closed on 10th April on account of Eid-ul-Fitr. Regular classes will resume from 11th April."
+            description = "The college will remain closed on 10th April on account of Eid-ul-Fitr. Regular classes will resume from 11th April.",
+            isNew = true
         ),
         NoticeItemData(
             title = "Fee Payment Deadline",
@@ -103,10 +104,11 @@ fun NoticesScreen(
                         .background(SurfaceDefault)
                 ) {
                     sampleNotices.forEachIndexed { index, notice ->
-                        LaunchpadNoticeItem(
+                        NoticeItemCard(
                             title = notice.title,
                             date = notice.date,
                             description = notice.description,
+                            isNew = notice.isNew,
                             showDivider = index != sampleNotices.lastIndex,
                             onClick = { onNoticeClick(notice) }
                         )

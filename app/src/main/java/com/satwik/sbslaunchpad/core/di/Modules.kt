@@ -12,6 +12,11 @@ import com.satwik.sbslaunchpad.data.profile.ProfileRepository
 import com.satwik.sbslaunchpad.data.profile.SupabaseProfileRepositoryImpl
 import com.satwik.sbslaunchpad.data.post.PostRepository
 import com.satwik.sbslaunchpad.data.post.SupabasePostRepositoryImpl
+import com.satwik.sbslaunchpad.data.thread.ThreadRepository
+import com.satwik.sbslaunchpad.data.thread.ThreadRepositorySupabaseImpl
+import com.satwik.sbslaunchpad.data.admin.AdminRepository
+import com.satwik.sbslaunchpad.data.admin.AdminRepositoryImpl
+import com.satwik.sbslaunchpad.features.notifications.updates.ThreadViewModel
 import com.satwik.sbslaunchpad.features.account.presentation.AccountViewModel
 import com.satwik.sbslaunchpad.features.auth.AuthViewModel
 import com.satwik.sbslaunchpad.features.auth.completeprofile.CompleteProfileViewModel
@@ -56,6 +61,8 @@ val appModule = module {
     single<AuthRepository> { SupabaseAuthRepositoryImpl(get()) }
     single <CloudFileUploader>{ CloudFileUploaderSupabaseImpl(get()) }
     single<ApplicationSystem>{ ApplicationSystemSupabaseImpl(get()) }
+    single<ThreadRepository> { ThreadRepositorySupabaseImpl(get()) }
+    single<AdminRepository> { AdminRepositoryImpl(get()) }
 
     viewModelOf(::AuthViewModel)
     viewModelOf(::CompleteProfileViewModel)
@@ -67,4 +74,5 @@ val appModule = module {
     viewModelOf(::AccountViewModel)
     viewModelOf(::BlacklistedAccountViewModel)
     viewModelOf(::ProfileVerificationPendingViewModel)
+    viewModelOf(::ThreadViewModel)
 }

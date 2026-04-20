@@ -1,5 +1,6 @@
-package com.satwik.sbslaunchpad.core.designsystem.components
+package com.satwik.sbslaunchpad.features.notifications.updates
 
+import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -25,24 +27,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.satwik.sbslaunchpad.core.designsystem.theme.BrandOnPrimary
+import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.NeutralContainer
 import com.satwik.sbslaunchpad.core.designsystem.theme.OnNeutralContainer
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceOutline
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
+import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
 
 @Composable
-fun LaunchpadNotificationItem(
+fun ThreadItemCard(
     title: String,
-    company: String,
-    description: String,
-    time: String,
+    companyName: String,
+    lastMessageText: String,
     modifier: Modifier = Modifier,
     logoUrl: String? = null,
+    unreadCount: Int = 0,
     showDivider: Boolean = true,
     onClick: () -> Unit = {}
 ) {
@@ -78,7 +84,7 @@ fun LaunchpadNotificationItem(
                         )
                     } else {
                         Icon(
-                            painter = painterResource(id = android.R.drawable.ic_menu_gallery),
+                            painter = painterResource(id = R.drawable.ic_menu_gallery),
                             contentDescription = "Company logo",
                             tint = OnNeutralContainer,
                             modifier = Modifier.size(24.dp),
@@ -104,18 +110,30 @@ fun LaunchpadNotificationItem(
                                 color = TextPrimary
                             )
                         )
-                        Text(
-                            text = time,
-                            style = TextStyle(
-                                fontFamily = poppins,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 13.sp,
-                                color = TextSecondary
-                            )
-                        )
+
+                        // Count Badge
+                        if (unreadCount > 0) {
+                            Box(
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clip(CircleShape)
+                                    .background(BrandPrimary),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = unreadCount.toString(),
+                                    style = TextStyle(
+                                        fontFamily = poppins,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 11.sp,
+                                        color = BrandOnPrimary
+                                    )
+                                )
+                            }
+                        }
                     }
                     Text(
-                        text = company,
+                        text = companyName,
                         style = TextStyle(
                             fontFamily = poppins,
                             fontWeight = FontWeight.Normal,
@@ -129,7 +147,7 @@ fun LaunchpadNotificationItem(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = description,
+                text = lastMessageText,
                 style = TextStyle(
                     fontFamily = poppins,
                     fontWeight = FontWeight.Normal,
@@ -152,5 +170,19 @@ fun LaunchpadNotificationItem(
                 thickness = 1.dp
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ThreadItemCardPreview() {
+    SBSLaunchpadTheme {
+        ThreadItemCard(
+            title = "Product Designer Intern",
+            companyName = "Google",
+            lastMessageText = "We are looking for a passionate Product Designer Intern to join our team and help us build amazing products for our users...",
+            unreadCount = 2,
+            logoUrl = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"
+        )
     }
 }

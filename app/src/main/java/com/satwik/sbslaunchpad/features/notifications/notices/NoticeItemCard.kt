@@ -1,7 +1,6 @@
-package com.satwik.sbslaunchpad.core.designsystem.components
+package com.satwik.sbslaunchpad.features.notifications.notices
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,15 +16,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.satwik.sbslaunchpad.core.designsystem.components.customShadow
 import com.satwik.sbslaunchpad.core.designsystem.theme.*
 import com.satwik.sbslaunchpad.features.notifications.model.NoticeItemData
 
 @Composable
-fun LaunchpadNoticeItem(
+fun NoticeItemCard(
     title: String,
     date: String,
     description: String,
     modifier: Modifier = Modifier,
+    isNew: Boolean = false,
     showDivider: Boolean = true,
     onClick: () -> Unit = {}
 ) {
@@ -37,7 +38,7 @@ fun LaunchpadNoticeItem(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -53,18 +54,29 @@ fun LaunchpadNoticeItem(
                         color = TextPrimary
                     )
                 )
-                Text(
-                    text = date,
-                    style = TextStyle(
-                        fontFamily = poppins,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 13.sp,
-                        color = TextSecondary
-                    )
-                )
+
+                if (isNew) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(BrandPrimary)
+                            .padding(horizontal = 10.dp, vertical = 2.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "New",
+                            style = TextStyle(
+                                fontFamily = poppins,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 10.sp,
+                                color = BrandOnPrimary
+                            )
+                        )
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
                 text = description,
@@ -75,11 +87,13 @@ fun LaunchpadNoticeItem(
                     color = TextSecondary,
                     lineHeight = 20.sp
                 ),
-                maxLines = 3,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth()
             )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         if (showDivider) {
             HorizontalDivider(
@@ -109,10 +123,11 @@ fun LaunchpadNoticeCard(
             .background(SurfaceDefault)
     ) {
         notices.forEachIndexed { index, notice ->
-            LaunchpadNoticeItem(
+            NoticeItemCard(
                 title = notice.title,
                 date = notice.date,
                 description = notice.description,
+                isNew = notice.isNew,
                 showDivider = index != notices.lastIndex,
                 onClick = { onNoticeClick(notice) }
             )
@@ -127,12 +142,14 @@ private fun LaunchpadNoticeCardPreview() {
         NoticeItemData(
             title = "Final Warning",
             date = "2nd April",
-            description = "Students are adviced to not use fake internship certificates in there resumes, once caught they will be blacklisted permanently from the placements..."
+            description = "Students are adviced to not use fake internship certificates in there resumes, once caught they will be blacklisted permanently from the placements...",
+            isNew = true
         ),
         NoticeItemData(
             title = "Final Warning",
             date = "2nd April",
-            description = "Students are adviced to not use fake internship certificates in there resumes, once caught they will be blacklisted permanently from the placements..."
+            description = "Students are adviced to not use fake internship certificates in there resumes, once caught they will be blacklisted permanently from the placements...",
+            isNew = false
         )
     )
 

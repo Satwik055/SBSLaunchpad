@@ -29,10 +29,15 @@ import org.koin.compose.koinInject
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
+import com.satwik.sbslaunchpad.features.notifications.updates.ThreadViewModel
+import com.satwik.sbslaunchpad.features.notifications.updates.ThreadWithPost
+import com.satwik.sbslaunchpad.core.util.Result
+
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     profileRepository: ProfileRepository = koinInject(),
+    threadViewModel: ThreadViewModel = koinViewModel(),
     onNotificationClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
@@ -43,6 +48,12 @@ fun HomeScreen(
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
     val profile by profileRepository.profile.collectAsState(null)
+    
+    val threadUiState by threadViewModel.uiState.collectAsState()
+    val notificationCount = if (threadUiState.success) {
+        val threadsWithPosts = threadUiState.successResult as? List<ThreadWithPost> ?: emptyList()
+        threadsWithPosts.sumOf { it.thread.unreadCount }
+    } else 0
 
 
     Column(
@@ -54,6 +65,7 @@ fun HomeScreen(
             firstName = profile?.fullName ?: "Guest",
             profilePictureUrl = profile?.profileImageUrl,
             userId = profile?.email ?: "",
+            notificationCount = notificationCount,
             onNotificationClick = onNotificationClick,
             onProfileClick = onProfileClick
         )

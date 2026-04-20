@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -21,22 +20,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTabRow
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTopAppBar
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
-import com.satwik.sbslaunchpad.features.notifications.components.NotificationDetailSheet
+import com.satwik.sbslaunchpad.features.notifications.notices.NoticeDetailSheet
+import com.satwik.sbslaunchpad.features.notifications.updates.ThreadDetailSheet
 import com.satwik.sbslaunchpad.features.notifications.model.NotificationSheetState
 import com.satwik.sbslaunchpad.features.notifications.notices.NoticesScreen
 import com.satwik.sbslaunchpad.features.notifications.updates.UpdatesScreen
+import com.satwik.sbslaunchpad.features.notifications.updates.ThreadViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationScreen(
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    viewModel: ThreadViewModel = koinViewModel()
 ) {
     val tabs = listOf("Updates", "Notices")
     val pagerState = rememberPagerState(pageCount = { tabs.size })
@@ -75,7 +77,11 @@ fun NotificationScreen(
             when (page) {
                 0 -> UpdatesScreen(
                     modifier = Modifier.fillMaxSize(),
-                    onNotificationClick = { sheetContent = NotificationSheetState.Notification(it) }
+                    onNotificationClick = {
+                        viewModel.markThreadAsRead(it.threadId)
+                        sheetContent = NotificationSheetState.Notification(it)
+                    },
+                    viewModel = viewModel
                 )
                 1 -> NoticesScreen(
                     modifier = Modifier.fillMaxSize(),
@@ -85,12 +91,28 @@ fun NotificationScreen(
         }
     }
 
-    if (sheetContent != null) {
-        NotificationDetailSheet(
-            content = sheetContent!!,
-            sheetState = sheetState,
-            onDismiss = { sheetContent = null }
-        )
+    when (val content = sheetContent) {
+        is NotificationSheetState.Notification -> {
+            ThreadDetailSheet(
+                notification = content.data,
+                sheetState = sheetState,
+                onDismiss = {
+                    viewModel.markMessagesAsRead(content.data.threadId)
+                    sheetContent = null
+                },
+                viewModel = viewModel
+            )
+        }
+
+        is NotificationSheetState.Notice -> {
+            NoticeDetailSheet(
+                notice = content.data,
+                sheetState = sheetState,
+                onDismiss = { sheetContent = null }
+            )
+        }
+
+        null -> {}
     }
 }
 

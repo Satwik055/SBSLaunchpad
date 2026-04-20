@@ -1,4 +1,4 @@
-package com.satwik.sbslaunchpad
+package com.satwik.sbslaunchpad.features.main
 
 import android.graphics.Color
 import android.os.Bundle

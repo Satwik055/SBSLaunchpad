@@ -1,5 +1,6 @@
 package com.satwik.sbslaunchpad.features.notifications
 
+import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTabRow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,16 +21,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTabRow
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTopAppBar
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
-import com.satwik.sbslaunchpad.features.notifications.notices.NoticeDetailSheet
-import com.satwik.sbslaunchpad.features.notifications.updates.ThreadDetailSheet
+import com.satwik.sbslaunchpad.features.notices.NoticeDetailSheet
+import com.satwik.sbslaunchpad.features.threads.ThreadDetailSheet
 import com.satwik.sbslaunchpad.features.notifications.model.NotificationSheetState
-import com.satwik.sbslaunchpad.features.notifications.notices.NoticesScreen
-import com.satwik.sbslaunchpad.features.notifications.updates.UpdatesScreen
-import com.satwik.sbslaunchpad.features.notifications.updates.ThreadViewModel
+import com.satwik.sbslaunchpad.features.notices.NoticesScreen
+import com.satwik.sbslaunchpad.features.threads.UpdatesScreen
+import com.satwik.sbslaunchpad.features.threads.ThreadViewModel
+import com.satwik.sbslaunchpad.features.notices.NoticeScreenViewModel
+import com.satwik.sbslaunchpad.features.threads.ThreadWithPost
+import com.satwik.sbslaunchpad.data.notice.Notice
+import androidx.compose.runtime.collectAsState
 import org.koin.compose.viewmodel.koinViewModel
 import kotlinx.coroutines.launch
 
@@ -38,11 +42,29 @@ import kotlinx.coroutines.launch
 fun NotificationScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    viewModel: ThreadViewModel = koinViewModel()
+    threadViewModel: ThreadViewModel = koinViewModel(),
+    noticeViewModel: NoticeScreenViewModel = koinViewModel()
 ) {
     val tabs = listOf("Updates", "Notices")
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
+
+    val threadUiState by threadViewModel.uiState.collectAsState()
+    val noticeUiState by noticeViewModel.uiState.collectAsState()
+
+    val unreadUpdatesCount = run {
+        if (threadUiState.success) {
+            val threadsWithPosts = threadUiState.successResult as? List<ThreadWithPost> ?: emptyList()
+            threadsWithPosts.sumOf { it.thread.unreadCount }
+        } else 0
+    }
+
+    val unreadNoticesCount = run {
+        if (noticeUiState.success) {
+            val notices = noticeUiState.successResult as? List<Notice> ?: emptyList()
+            notices.count { !it.isRead }
+        } else 0
+    }
 
     var sheetContent by remember { mutableStateOf<NotificationSheetState?>(null) }
     val sheetState = rememberModalBottomSheetState()
@@ -65,7 +87,8 @@ fun NotificationScreen(
                 coroutineScope.launch {
                     pagerState.animateScrollToPage(index)
                 }
-            }
+            },
+            unreadCounts = listOf(unreadUpdatesCount, unreadNoticesCount)
         )
 
         HorizontalPager(
@@ -78,10 +101,10 @@ fun NotificationScreen(
                 0 -> UpdatesScreen(
                     modifier = Modifier.fillMaxSize(),
                     onNotificationClick = {
-                        viewModel.markThreadAsRead(it.threadId)
+                        threadViewModel.markThreadAsRead(it.threadId)
                         sheetContent = NotificationSheetState.Notification(it)
                     },
-                    viewModel = viewModel
+                    viewModel = threadViewModel
                 )
                 1 -> NoticesScreen(
                     modifier = Modifier.fillMaxSize(),
@@ -97,10 +120,10 @@ fun NotificationScreen(
                 notification = content.data,
                 sheetState = sheetState,
                 onDismiss = {
-                    viewModel.markMessagesAsRead(content.data.threadId)
+                    threadViewModel.markMessagesAsRead(content.data.threadId)
                     sheetContent = null
                 },
-                viewModel = viewModel
+                viewModel = threadViewModel
             )
         }
 

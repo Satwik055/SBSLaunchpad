@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
+import com.satwik.sbslaunchpad.features.main.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadButton
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTopAppBar
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceOutline
@@ -24,7 +24,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadSnackbarHost
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTextFeild
 import com.satwik.sbslaunchpad.core.designsystem.components.TextFeildCard
@@ -37,17 +36,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
-import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.LaunchpadYellow
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
-import com.satwik.sbslaunchpad.features.auth.AuthViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun RegisterScreen(
     modifier: Modifier = Modifier,
-    viewModel: AuthViewModel = koinViewModel(),
+    viewModel: RegisterViewModel = koinViewModel(),
     onBackClick: () -> Unit = {},
     onContinueClick: () -> Unit = {},
     onLoginClick: () -> Unit = {}

@@ -1,4 +1,4 @@
-package com.satwik.sbslaunchpad.data.application_system
+package com.satwik.sbslaunchpad.data.application
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

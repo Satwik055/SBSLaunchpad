@@ -1,4 +1,4 @@
-package com.satwik.sbslaunchpad
+package com.satwik.sbslaunchpad.features.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

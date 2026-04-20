@@ -3,7 +3,7 @@ package com.satwik.sbslaunchpad.features.home.tabs.internships
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.satwik.sbslaunchpad.core.util.Result
-import com.satwik.sbslaunchpad.data.application_system.ApplicationSystem
+import com.satwik.sbslaunchpad.data.application.ApplicationRepository
 import com.satwik.sbslaunchpad.data.auth.AuthRepository
 import com.satwik.sbslaunchpad.data.post.PostRepository
 import com.satwik.sbslaunchpad.data.post.PostType
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 class InternshipsViewModel(
     private val repository: PostRepository,
-    private val applicationSystem: ApplicationSystem,
+    private val applicationRepository: ApplicationRepository,
     private val authRepository: AuthRepository,
     private val profileRepository: ProfileRepository
 ) : ViewModel() {
@@ -66,7 +66,7 @@ class InternshipsViewModel(
                 _isAppliedLoading.value = false
                 return@launch
             }
-            applicationSystem.getApplicationsForStudent(userId).collect { applications ->
+            applicationRepository.getApplicationsForStudent(userId).collect { applications ->
                 _appliedPostIds.value = applications.map { it.postId }.toSet()
                 _isAppliedLoading.value = false
             }
@@ -87,7 +87,7 @@ class InternshipsViewModel(
     }
 
     private fun observeApplicantsCount(postId: String) {
-        applicationSystem.getAllApplicants(postId)
+        applicationRepository.getAllApplicants(postId)
             .onEach { count ->
                 _applicantsCounts.value = _applicantsCounts.value.toMutableMap().apply {
                     put(postId, count)
@@ -106,7 +106,7 @@ class InternshipsViewModel(
         viewModelScope.launch {
             _applicationState.value = Result(isLoading = true)
             try {
-                applicationSystem.sendApplication(postId, userId)
+                applicationRepository.sendApplication(postId, userId)
                 _applicationState.value = Result(success = true)
             } catch (e: Exception) {
                 _applicationState.value = Result(error = e.message ?: "Failed to send application")

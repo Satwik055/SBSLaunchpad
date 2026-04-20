@@ -1,4 +1,4 @@
-package com.satwik.sbslaunchpad.features.auth.completeprofile
+package com.satwik.sbslaunchpad.features.completeprofile
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
+import com.satwik.sbslaunchpad.features.main.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadButton
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTextFeild
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTopAppBar

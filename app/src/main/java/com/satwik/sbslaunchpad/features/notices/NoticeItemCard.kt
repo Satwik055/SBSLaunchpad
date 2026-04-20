@@ -1,4 +1,4 @@
-package com.satwik.sbslaunchpad.features.notifications.notices
+package com.satwik.sbslaunchpad.features.notices
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,31 +47,50 @@ fun NoticeItemCard(
             ) {
                 Text(
                     text = title,
+                    modifier = Modifier.weight(1f),
                     style = TextStyle(
                         fontFamily = poppins,
                         fontWeight = FontWeight.Medium,
                         fontSize = 15.sp,
                         color = TextPrimary
-                    )
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
-                if (isNew) {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(BrandPrimary)
-                            .padding(horizontal = 10.dp, vertical = 2.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "New",
-                            style = TextStyle(
-                                fontFamily = poppins,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 10.sp,
-                                color = BrandOnPrimary
-                            )
+                Spacer(Modifier.width(30.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = date,
+                        style = TextStyle(
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 11.sp,
+                            color = TextSecondary
                         )
+                    )
+
+                    if (isNew) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(BrandPrimary)
+                                .padding(horizontal = 10.dp, vertical = 2.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "New",
+                                style = TextStyle(
+                                    fontFamily = poppins,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 10.sp,
+                                    color = BrandOnPrimary
+                                )
+                            )
+                        }
                     }
                 }
             }
@@ -87,7 +106,7 @@ fun NoticeItemCard(
                     color = TextSecondary,
                     lineHeight = 20.sp
                 ),
-                maxLines = 2,
+                maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth()
             )

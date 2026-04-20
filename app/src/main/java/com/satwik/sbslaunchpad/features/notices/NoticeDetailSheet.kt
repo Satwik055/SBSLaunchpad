@@ -1,8 +1,8 @@
-package com.satwik.sbslaunchpad.features.notifications.notices
+package com.satwik.sbslaunchpad.features.notices
 
-import androidx.compose.foundation.layout.Arrangement
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,12 +29,14 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceOutline
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
-import com.satwik.sbslaunchpad.features.notifications.model.NoticeItemData
+import com.satwik.sbslaunchpad.core.util.toFormattedTimestamp
+import com.satwik.sbslaunchpad.data.notice.Notice
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoticeDetailSheet(
-    notice: NoticeItemData,
+    notice: Notice,
     sheetState: SheetState,
     onDismiss: () -> Unit
 ) {
@@ -50,33 +52,21 @@ fun NoticeDetailSheet(
                 .verticalScroll(rememberScrollState())
                 .padding(start = 24.dp, end = 24.dp, bottom = 48.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = notice.title,
-                    fontFamily = poppins,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 16.sp,
-                    color = TextPrimary
-                )
-                Text(
-                    text = notice.date,
-                    fontFamily = poppins,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
-                    color = TextSecondary
-                )
-            }
+            Text(
+                text = notice.title,
+                fontFamily = poppins,
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                color = TextPrimary,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider(color = SurfaceOutline, thickness = 1.dp)
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = notice.description,
+                text = notice.body,
                 fontFamily = poppins,
                 fontWeight = FontWeight.Normal,
                 fontSize = 13.sp,
@@ -84,19 +74,34 @@ fun NoticeDetailSheet(
                 lineHeight = 22.sp,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = notice.createdAt?.toFormattedTimestamp() ?: "",
+                modifier = Modifier.align(Alignment.End),
+                fontFamily = poppins,
+                fontWeight = FontWeight.Normal,
+                fontSize = 12.sp,
+                color = TextSecondary
+            )
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 private fun NoticeDetailSheetPreview() {
-    val sampleNotice = NoticeItemData(
-        title = "Final Warning",
-        date = "2nd April",
-        description = "Students are advised to not use fake internship certificates in their resumes, once caught they will be blacklisted permanently from the placements. This is a very serious matter and the college will take strict action against those who are found guilty.",
-        isNew = true
+    val sampleNotice = Notice(
+        id = 1,
+        title = "Final WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal Warning",
+        body = "Students are advised to not use fake internship certificates in their resumes, once caught they will be blacklisted permanently from the placements. This is a very serious matter and the college will take strict action against those who are found guilty.",
+        senderId = "admin1",
+        recieverId = "student1",
+        createdAt = "2023-10-27T10:15:30+05:30",
+        isRead = false
     )
 
     SBSLaunchpadTheme {

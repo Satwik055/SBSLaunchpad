@@ -3,7 +3,7 @@ package com.satwik.sbslaunchpad.features.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.satwik.sbslaunchpad.core.util.Result
-import com.satwik.sbslaunchpad.data.application_system.ApplicationSystem
+import com.satwik.sbslaunchpad.data.application.ApplicationRepository
 import com.satwik.sbslaunchpad.data.auth.AuthRepository
 import com.satwik.sbslaunchpad.data.post.Post
 import com.satwik.sbslaunchpad.data.post.PostRepository
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 class DetailViewModel(
     private val repository: PostRepository,
-    private val applicationSystem: ApplicationSystem,
+    private val applicationRepository: ApplicationRepository,
     private val authRepository: AuthRepository,
     private val profileRepository: ProfileRepository
 ) : ViewModel() {
@@ -80,7 +80,7 @@ class DetailViewModel(
             }
 
             combine(
-                applicationSystem.getApplicationsForStudent(userId),
+                applicationRepository.getApplicationsForStudent(userId),
                 profileRepository.profile
             ) { applications, profile ->
                 _isApplied.value = applications.any { it.postId == post.id }
@@ -122,7 +122,7 @@ class DetailViewModel(
     }
 
     private fun loadApplicantsCount(postId: String) {
-        applicationSystem.getAllApplicants(postId)
+        applicationRepository.getAllApplicants(postId)
             .onEach { count ->
                 _applicantsCount.value = count
             }
@@ -138,7 +138,7 @@ class DetailViewModel(
                 return@launch
             }
             try {
-                applicationSystem.sendApplication(postId, userId)
+                applicationRepository.sendApplication(postId, userId)
                 _applicationState.value = Result(success = true)
                 _isApplied.value = true
             } catch (e: Exception) {

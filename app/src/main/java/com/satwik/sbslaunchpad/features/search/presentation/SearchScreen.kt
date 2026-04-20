@@ -10,14 +10,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
+import com.satwik.sbslaunchpad.features.main.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadJobPostCard
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadSearchBar
@@ -25,19 +21,11 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceOutline
 import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
-import com.satwik.sbslaunchpad.core.util.getRemainingTime
-import com.satwik.sbslaunchpad.data.post.Post
-import com.satwik.sbslaunchpad.data.post.PostType
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.plus
 import kotlin.time.ExperimentalTime
 
-import androidx.compose.runtime.collectAsState
-import com.satwik.sbslaunchpad.features.search.presentation.SearchViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.Alignment
 import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary

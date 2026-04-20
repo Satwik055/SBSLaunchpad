@@ -1,4 +1,4 @@
-package com.satwik.sbslaunchpad.features.notifications.updates
+package com.satwik.sbslaunchpad.features.threads
 
 import android.R
 import androidx.compose.foundation.background

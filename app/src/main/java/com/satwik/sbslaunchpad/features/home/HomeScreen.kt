@@ -1,5 +1,6 @@
 package com.satwik.sbslaunchpad.features.home
 
+import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTabRow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,8 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
-import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTabRow
+import com.satwik.sbslaunchpad.features.main.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.core.designsystem.components.SearchBarTrigger
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
@@ -29,15 +29,17 @@ import org.koin.compose.koinInject
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
-import com.satwik.sbslaunchpad.features.notifications.updates.ThreadViewModel
-import com.satwik.sbslaunchpad.features.notifications.updates.ThreadWithPost
-import com.satwik.sbslaunchpad.core.util.Result
+import com.satwik.sbslaunchpad.features.threads.ThreadViewModel
+import com.satwik.sbslaunchpad.features.threads.ThreadWithPost
+import com.satwik.sbslaunchpad.features.notices.NoticeScreenViewModel
+import com.satwik.sbslaunchpad.data.notice.Notice
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     profileRepository: ProfileRepository = koinInject(),
     threadViewModel: ThreadViewModel = koinViewModel(),
+    noticeViewModel: NoticeScreenViewModel = koinViewModel(),
     onNotificationClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
@@ -50,10 +52,21 @@ fun HomeScreen(
     val profile by profileRepository.profile.collectAsState(null)
     
     val threadUiState by threadViewModel.uiState.collectAsState()
-    val notificationCount = if (threadUiState.success) {
-        val threadsWithPosts = threadUiState.successResult as? List<ThreadWithPost> ?: emptyList()
-        threadsWithPosts.sumOf { it.thread.unreadCount }
-    } else 0
+    val noticeUiState by noticeViewModel.uiState.collectAsState()
+
+    val notificationCount = run {
+        val threadCount = if (threadUiState.success) {
+            val threadsWithPosts = threadUiState.successResult as? List<ThreadWithPost> ?: emptyList()
+            threadsWithPosts.sumOf { it.thread.unreadCount }
+        } else 0
+
+        val noticeCount = if (noticeUiState.success) {
+            val notices = noticeUiState.successResult as? List<Notice> ?: emptyList()
+            notices.count { !it.isRead }
+        } else 0
+
+        threadCount + noticeCount
+    }
 
 
     Column(

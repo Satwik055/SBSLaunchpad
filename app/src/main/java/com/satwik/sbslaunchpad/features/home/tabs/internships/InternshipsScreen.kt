@@ -15,11 +15,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
+import com.satwik.sbslaunchpad.features.main.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadJobPostCard
 import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
-import com.satwik.sbslaunchpad.core.util.getRemainingTime
-import com.satwik.sbslaunchpad.core.util.toReadableDate
 import com.satwik.sbslaunchpad.data.post.Post
 import com.satwik.sbslaunchpad.data.post.PostType
 import com.satwik.sbslaunchpad.data.profile.Profile

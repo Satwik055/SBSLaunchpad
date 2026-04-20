@@ -1,4 +1,4 @@
-package com.satwik.sbslaunchpad.features.barriers
+package com.satwik.sbslaunchpad.features.verification
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

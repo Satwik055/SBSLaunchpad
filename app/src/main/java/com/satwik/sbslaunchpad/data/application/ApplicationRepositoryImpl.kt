@@ -1,5 +1,5 @@
 @file:OptIn(kotlin.time.ExperimentalTime::class)
-package com.satwik.sbslaunchpad.data.application_system
+package com.satwik.sbslaunchpad.data.application
 
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
@@ -10,9 +10,9 @@ import io.github.jan.supabase.realtime.selectAsFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class ApplicationSystemSupabaseImpl(
+class ApplicationRepositoryImpl(
     private val client: SupabaseClient,
-): ApplicationSystem {
+): ApplicationRepository {
     override suspend fun sendApplication(postId: String, studentId: String) {
         val application = Application(
             postId = postId,

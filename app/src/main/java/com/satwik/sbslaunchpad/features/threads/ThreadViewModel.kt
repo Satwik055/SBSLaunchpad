@@ -1,4 +1,4 @@
-package com.satwik.sbslaunchpad.features.notifications.updates
+package com.satwik.sbslaunchpad.features.threads
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

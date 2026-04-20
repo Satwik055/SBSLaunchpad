@@ -1,11 +1,11 @@
 package com.satwik.sbslaunchpad.core.di
 
-import com.satwik.sbslaunchpad.MainViewModel
+import com.satwik.sbslaunchpad.features.main.MainViewModel
 import com.satwik.sbslaunchpad.core.fileUploader.CloudFileUploader
 import com.satwik.sbslaunchpad.core.fileUploader.CloudFileUploaderSupabaseImpl
 import com.satwik.sbslaunchpad.core.util.Constants
-import com.satwik.sbslaunchpad.data.application_system.ApplicationSystem
-import com.satwik.sbslaunchpad.data.application_system.ApplicationSystemSupabaseImpl
+import com.satwik.sbslaunchpad.data.application.ApplicationRepository
+import com.satwik.sbslaunchpad.data.application.ApplicationRepositoryImpl
 import com.satwik.sbslaunchpad.data.auth.AuthRepository
 import com.satwik.sbslaunchpad.data.auth.SupabaseAuthRepositoryImpl
 import com.satwik.sbslaunchpad.data.profile.ProfileRepository
@@ -16,12 +16,16 @@ import com.satwik.sbslaunchpad.data.thread.ThreadRepository
 import com.satwik.sbslaunchpad.data.thread.ThreadRepositorySupabaseImpl
 import com.satwik.sbslaunchpad.data.admin.AdminRepository
 import com.satwik.sbslaunchpad.data.admin.AdminRepositoryImpl
-import com.satwik.sbslaunchpad.features.notifications.updates.ThreadViewModel
+import com.satwik.sbslaunchpad.data.notice.NoticeRepository
+import com.satwik.sbslaunchpad.data.notice.NoticeRepositoryImpl
+import com.satwik.sbslaunchpad.features.notices.NoticeScreenViewModel
+import com.satwik.sbslaunchpad.features.threads.ThreadViewModel
 import com.satwik.sbslaunchpad.features.account.presentation.AccountViewModel
-import com.satwik.sbslaunchpad.features.auth.AuthViewModel
-import com.satwik.sbslaunchpad.features.auth.completeprofile.CompleteProfileViewModel
-import com.satwik.sbslaunchpad.features.barriers.BlacklistedAccountViewModel
-import com.satwik.sbslaunchpad.features.barriers.ProfileVerificationPendingViewModel
+import com.satwik.sbslaunchpad.features.auth.login.LoginViewModel
+import com.satwik.sbslaunchpad.features.auth.register.RegisterViewModel
+import com.satwik.sbslaunchpad.features.completeprofile.CompleteProfileViewModel
+import com.satwik.sbslaunchpad.features.blacklist.BlacklistedAccountViewModel
+import com.satwik.sbslaunchpad.features.verification.ProfileVerificationPendingViewModel
 import com.satwik.sbslaunchpad.features.home.tabs.jobs.JobsViewModel
 import com.satwik.sbslaunchpad.features.home.tabs.internships.InternshipsViewModel
 import com.satwik.sbslaunchpad.features.detail.DetailViewModel
@@ -60,11 +64,13 @@ val appModule = module {
     single<ProfileRepository> { SupabaseProfileRepositoryImpl(get(), get()) }
     single<AuthRepository> { SupabaseAuthRepositoryImpl(get()) }
     single <CloudFileUploader>{ CloudFileUploaderSupabaseImpl(get()) }
-    single<ApplicationSystem>{ ApplicationSystemSupabaseImpl(get()) }
+    single<ApplicationRepository>{ ApplicationRepositoryImpl(get()) }
     single<ThreadRepository> { ThreadRepositorySupabaseImpl(get()) }
     single<AdminRepository> { AdminRepositoryImpl(get()) }
+    single<NoticeRepository> { NoticeRepositoryImpl(get()) }
 
-    viewModelOf(::AuthViewModel)
+    viewModelOf(::LoginViewModel)
+    viewModelOf(::RegisterViewModel)
     viewModelOf(::CompleteProfileViewModel)
     viewModelOf(::MainViewModel)
     viewModelOf(::JobsViewModel)
@@ -75,4 +81,5 @@ val appModule = module {
     viewModelOf(::BlacklistedAccountViewModel)
     viewModelOf(::ProfileVerificationPendingViewModel)
     viewModelOf(::ThreadViewModel)
+    viewModelOf(::NoticeScreenViewModel)
 }

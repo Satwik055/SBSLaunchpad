@@ -3,9 +3,8 @@ package com.satwik.sbslaunchpad.features.home.tabs.jobs
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.satwik.sbslaunchpad.core.util.Result
-import com.satwik.sbslaunchpad.data.application_system.ApplicationSystem
+import com.satwik.sbslaunchpad.data.application.ApplicationRepository
 import com.satwik.sbslaunchpad.data.auth.AuthRepository
-import com.satwik.sbslaunchpad.data.post.Post
 import com.satwik.sbslaunchpad.data.post.PostRepository
 import com.satwik.sbslaunchpad.data.post.PostType
 import com.satwik.sbslaunchpad.data.profile.Profile
@@ -22,7 +21,7 @@ import kotlinx.coroutines.launch
 
 class JobsViewModel(
     private val postRepository: PostRepository,
-    private val applicationSystem: ApplicationSystem,
+    private val applicationRepository: ApplicationRepository,
     private val authRepository: AuthRepository,
     private val profileRepository: ProfileRepository
 ) : ViewModel() {
@@ -64,7 +63,7 @@ class JobsViewModel(
                 _isAppliedLoading.value = false
                 return@launch
             }
-            applicationSystem.getApplicationsForStudent(userId).collect { applications ->
+            applicationRepository.getApplicationsForStudent(userId).collect { applications ->
                 _appliedPostIds.value = applications.map { it.postId }.toSet()
                 _isAppliedLoading.value = false
             }
@@ -85,7 +84,7 @@ class JobsViewModel(
     }
 
     private fun observeApplicantsCount(postId: String) {
-        applicationSystem.getAllApplicants(postId)
+        applicationRepository.getAllApplicants(postId)
             .onEach { count ->
                 _applicantsCounts.value = _applicantsCounts.value.toMutableMap().apply {
                     put(postId, count)

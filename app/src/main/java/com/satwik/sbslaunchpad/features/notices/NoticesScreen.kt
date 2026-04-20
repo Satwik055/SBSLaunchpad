@@ -1,4 +1,4 @@
-package com.satwik.sbslaunchpad.features.notifications.updates
+package com.satwik.sbslaunchpad.features.notices
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,34 +19,52 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.satwik.sbslaunchpad.LocalHorizontalAppPadding
+import com.satwik.sbslaunchpad.features.main.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.core.designsystem.components.customShadow
 import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.DefaultElevation
 import com.satwik.sbslaunchpad.core.designsystem.theme.ElevationStrength
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceDefault
+import com.satwik.sbslaunchpad.core.util.Result
+import com.satwik.sbslaunchpad.data.notice.Notice
 import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
-import com.satwik.sbslaunchpad.features.notifications.model.NotificationItemData
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun UpdatesScreen(
-    onNotificationClick: (NotificationItemData) -> Unit,
+fun NoticesScreen(
+    onNoticeClick: (Notice) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ThreadViewModel = koinViewModel()
+    viewModel: NoticeScreenViewModel = koinViewModel()
 ) {
     val result by viewModel.uiState.collectAsState()
+
+    NoticesContent(
+        uiState = result,
+        onNoticeClick = onNoticeClick,
+        onMarkAsRead = viewModel::markNoticeAsRead,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun NoticesContent(
+    uiState: Result,
+    onNoticeClick: (Notice) -> Unit,
+    onMarkAsRead: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val scrollState = rememberLazyListState()
 
     Box(modifier = modifier.fillMaxSize()) {
-        if (result.isLoading) {
+        if (uiState.isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
                 color = BrandPrimary
             )
-        } else if (result.success) {
-            val threadsWithPosts = result.successResult as? List<ThreadWithPost> ?: emptyList()
+        } else if (uiState.success) {
+            @Suppress("UNCHECKED_CAST")
+            val notices = uiState.successResult as? List<Notice> ?: emptyList()
 
             LazyScrollShadows(scrollState = scrollState) {
                 LazyColumn(
@@ -69,28 +87,16 @@ fun UpdatesScreen(
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(SurfaceDefault)
                         ) {
-                            threadsWithPosts.forEachIndexed { index, item ->
-                                val thread = item.thread
-                                val post = item.post
-                                ThreadItemCard(
-                                    title = post?.jobProfile ?: "Update",
-                                    companyName = post?.companyName ?: "Placement Cell",
-                                    lastMessageText = thread.lastMessage,
-                                    logoUrl = post?.companyLogoUrl,
-                                    unreadCount = thread.unreadCount,
-                                    showDivider = index != threadsWithPosts.lastIndex,
+                            notices.forEachIndexed { index, notice ->
+                                NoticeItemCard(
+                                    title = notice.title,
+                                    date = notice.createdAt?.take(10) ?: "", // Simplified date for now
+                                    description = notice.body,
+                                    isNew = !notice.isRead,
+                                    showDivider = index != notices.lastIndex,
                                     onClick = {
-                                        onNotificationClick(
-                                            NotificationItemData(
-                                                threadId = thread.id,
-                                                title = post?.jobProfile ?: "Update",
-                                                company = post?.companyName ?: "Placement Cell",
-                                                description = thread.lastMessage,
-                                                time = thread.lastMessageTime,
-                                                logoUrl = post?.companyLogoUrl,
-                                                count = thread.unreadCount
-                                            )
-                                        )
+                                        onMarkAsRead(notice.id)
+                                        onNoticeClick(notice)
                                     }
                                 )
                             }
@@ -98,9 +104,9 @@ fun UpdatesScreen(
                     }
                 }
             }
-        } else if (result.error.isNotEmpty()) {
+        } else if (uiState.error.isNotEmpty()) {
             Text(
-                text = result.error,
+                text = uiState.error,
                 modifier = Modifier.align(Alignment.Center)
             )
         }
@@ -109,8 +115,33 @@ fun UpdatesScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun UpdatesScreenPreview() {
+private fun NoticesScreenPreview() {
+    val sampleNotices = listOf(
+        Notice(
+            id = 1,
+            title = "Final Warning",
+            body = "Students are adviced to not use fake internship certificates in there resumes, once caught they will be blacklisted permanently from the placements...",
+            senderId = "1",
+            recieverId = "2",
+            createdAt = "2023-10-27",
+            isRead = false
+        ),
+        Notice(
+            id = 2,
+            title = "Placement Drive",
+            body = "Google is visiting the campus for a placement drive on 30th October. All eligible students are requested to register.",
+            senderId = "1",
+            recieverId = "2",
+            createdAt = "2023-10-26",
+            isRead = true
+        )
+    )
+
     SBSLaunchpadTheme {
-        UpdatesScreen(onNotificationClick = {})
+        NoticesContent(
+            uiState = Result(success = true, successResult = sampleNotices),
+            onNoticeClick = {},
+            onMarkAsRead = {}
+        )
     }
 }

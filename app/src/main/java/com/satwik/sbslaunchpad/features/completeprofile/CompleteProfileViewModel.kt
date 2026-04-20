@@ -1,4 +1,4 @@
-package com.satwik.sbslaunchpad.features.auth.completeprofile
+package com.satwik.sbslaunchpad.features.completeprofile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -3,11 +3,12 @@
     <style name="Theme.SBSLaunchpad" parent="android:Theme.Material.Light.NoActionBar" >
         <item name="android:windowBackground">#FDFBF6</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#FDFBF6</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="windowSplashScreenBackground">#FDC307</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_app_icon</item>
         <item name="postSplashScreenTheme">@style/Theme.SBSLaunchpad</item>
     </style>
 </resources>

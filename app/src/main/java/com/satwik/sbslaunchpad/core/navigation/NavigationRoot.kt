@@ -20,6 +20,7 @@ import com.satwik.sbslaunchpad.features.detail.JobDetailsScreen
 import com.satwik.sbslaunchpad.features.home.HomeScreen
 import com.satwik.sbslaunchpad.features.notifications.NotificationScreen
 import com.satwik.sbslaunchpad.features.search.presentation.SearchScreen
+import com.satwik.sbslaunchpad.features.welcome.WelcomeScreen
 
 @Composable
 fun NavigationRoot(modifier: Modifier = Modifier, backStack: MutableList<NavKey>) {
@@ -28,6 +29,15 @@ fun NavigationRoot(modifier: Modifier = Modifier, backStack: MutableList<NavKey>
         backStack = backStack,
         entryProvider = { key ->
             when (key) {
+                is ScreenWelcome -> {
+                    NavEntry(key = key) {
+                        WelcomeScreen(
+                            onLoginClick = { backStack.add(ScreenLogin) },
+                            onRegisterClick = { backStack.add(ScreenRegister) }
+                        )
+                    }
+                }
+
                 is ScreenLogin -> {
                     NavEntry(key = key) {
                         LoginScreen(
@@ -123,7 +133,7 @@ fun NavigationRoot(modifier: Modifier = Modifier, backStack: MutableList<NavKey>
                             onBackClick = { backStack.remove(key) },
                             onLogoutClick = {
                                 backStack.clear()
-                                backStack.add(ScreenLogin)
+                                backStack.add(ScreenWelcome)
                             }
                         )
                     }

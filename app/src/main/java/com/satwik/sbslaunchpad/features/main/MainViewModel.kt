@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.satwik.sbslaunchpad.data.auth.AuthRepository
 import com.satwik.sbslaunchpad.data.profile.ProfileRepository
 import io.github.jan.supabase.auth.status.SessionStatus
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,6 +35,8 @@ class MainViewModel(
     }
 
     private fun observeState() {
+        val startTime = System.currentTimeMillis()
+
         viewModelScope.launch {
             combine(
                 authRepository.sessionStatus,
@@ -61,6 +64,13 @@ class MainViewModel(
                     is SessionStatus.RefreshFailure -> AppState.LoginRequired
                 }
             }.collectLatest { newState ->
+                //Splash Screen logic
+                if (newState != AppState.Loading) {
+                    val elapsedTime = System.currentTimeMillis() - startTime
+                    if (elapsedTime < 2000) {
+                        delay(2000 - elapsedTime)
+                    }
+                }
                 _appState.value = newState
             }
         }

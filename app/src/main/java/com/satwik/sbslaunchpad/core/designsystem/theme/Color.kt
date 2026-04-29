@@ -43,3 +43,14 @@ val TabOutline          = Color(0xFFCDCDCD)
 // ─── Neutral ─────────────────────────────────────────────────────────────────
 val NeutralContainer    = Color(0xFFEBEBEB)
 val OnNeutralContainer  = Color(0xFF959595)
+
+// ─── Error ───────────────────────────────────────────────────────────────────
+val Error               = Color(0xFFFF0000)
+
+// ─── Callout Card ────────────────────────────────────────────────────────────
+val SuccessContainer    = Color(0xFFD7F8CD)
+val OnSuccessContainer  = Color(0xFF006400)
+val ErrorContainer      = Color(0xFFFDE2E2)
+val OnErrorContainer    = Color(0xFFE53935)
+val WarningContainer    = Color(0xFFF1FF9F)
+val OnWarningContainer  = Color(0xFF2E2D23)

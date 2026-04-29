@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -48,7 +49,7 @@ fun ScrollShadows(
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
                 .height(shadowHeight)
-                .alpha(topAlpha)
+                .graphicsLayer { alpha = topAlpha }
                 .background(
                     Brush.verticalGradient(listOf(shadowColor, Color.Transparent))
                 )
@@ -60,7 +61,7 @@ fun ScrollShadows(
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .height(shadowHeight)
-                .alpha(bottomAlpha)
+                .graphicsLayer { alpha = bottomAlpha }
                 .background(
                     Brush.verticalGradient(listOf(Color.Transparent, shadowColor))
                 )
@@ -97,7 +98,7 @@ fun LazyScrollShadows(
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
                 .height(shadowHeight)
-                .alpha(topAlpha)
+                .graphicsLayer { alpha = topAlpha }
                 .background(
                     Brush.verticalGradient(listOf(shadowColor, Color.Transparent))
                 )
@@ -109,7 +110,7 @@ fun LazyScrollShadows(
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .height(shadowHeight)
-                .alpha(bottomAlpha)
+                .graphicsLayer { alpha = bottomAlpha }
                 .background(
                     Brush.verticalGradient(listOf(Color.Transparent, shadowColor))
                 )

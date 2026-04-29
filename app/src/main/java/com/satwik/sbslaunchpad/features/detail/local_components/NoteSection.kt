@@ -41,7 +41,7 @@ fun NoteSection(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_info),
+                painter = painterResource(id = R.drawable.ic_info_filled),
                 contentDescription = null,
                 tint = Color(0xFFFF5252),
                 modifier = Modifier.size(20.dp)

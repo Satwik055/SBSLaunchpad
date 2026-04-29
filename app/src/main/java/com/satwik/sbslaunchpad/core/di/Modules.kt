@@ -21,12 +21,14 @@ import com.satwik.sbslaunchpad.data.notice.NoticeRepository
 import com.satwik.sbslaunchpad.data.notice.NoticeRepositoryImpl
 import com.satwik.sbslaunchpad.features.notices.NoticeScreenViewModel
 import com.satwik.sbslaunchpad.features.threads.ThreadViewModel
-import com.satwik.sbslaunchpad.features.account.presentation.AccountViewModel
+import com.satwik.sbslaunchpad.features.account.AccountViewModel
+import com.satwik.sbslaunchpad.features.editprofile.EditProfileViewModel
 import com.satwik.sbslaunchpad.features.auth.login.LoginViewModel
 import com.satwik.sbslaunchpad.features.auth.register.RegisterViewModel
 import com.satwik.sbslaunchpad.features.completeprofile.CompleteProfileViewModel
 import com.satwik.sbslaunchpad.features.blacklist.BlacklistedAccountViewModel
-import com.satwik.sbslaunchpad.features.verification.ProfileVerificationPendingViewModel
+import com.satwik.sbslaunchpad.features.verification.ProfileInReviewViewModel
+import com.satwik.sbslaunchpad.features.verification.ProfileRejectedViewModel
 import com.satwik.sbslaunchpad.features.home.tabs.jobs.JobsViewModel
 import com.satwik.sbslaunchpad.features.home.tabs.internships.InternshipsViewModel
 import com.satwik.sbslaunchpad.features.detail.DetailViewModel
@@ -82,7 +84,9 @@ val appModule = module {
     viewModelOf(::SearchViewModel)
     viewModelOf(::AccountViewModel)
     viewModelOf(::BlacklistedAccountViewModel)
-    viewModelOf(::ProfileVerificationPendingViewModel)
+    viewModelOf(::ProfileInReviewViewModel)
+    viewModelOf(::ProfileRejectedViewModel)
     viewModelOf(::ThreadViewModel)
     viewModelOf(::NoticeScreenViewModel)
+    viewModelOf(::EditProfileViewModel)
 }

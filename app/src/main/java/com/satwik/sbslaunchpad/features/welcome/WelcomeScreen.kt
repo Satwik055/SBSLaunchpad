@@ -14,11 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,8 +34,6 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 
 import androidx.compose.ui.tooling.preview.Preview
 import com.satwik.sbslaunchpad.core.designsystem.components.customShadow
-import com.satwik.sbslaunchpad.core.designsystem.theme.DefaultElevation
-import com.satwik.sbslaunchpad.core.designsystem.theme.ElevationStrength
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
 
 @Composable

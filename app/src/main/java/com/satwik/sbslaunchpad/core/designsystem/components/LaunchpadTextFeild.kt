@@ -2,6 +2,7 @@ package com.satwik.sbslaunchpad.core.designsystem.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
@@ -11,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,11 +40,18 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 fun LaunchpadTextFeild(
     modifier: Modifier = Modifier,
     state: TextFieldState,
-    semantic: ContentType,
+    onValueChange: (String) -> Unit = {},
+    semantic: ContentType = ContentType.Username,
     placeholder: String = "Enter your email",
-    isPassword: Boolean = false
+    isPassword: Boolean = false,
+    isError: Boolean = false,
+    keyboardType: KeyboardType = KeyboardType.Text
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(state.text) {
+        onValueChange(state.text.toString())
+    }
 
     val textStyle = TextStyle(
             fontFamily = fontFamily,
@@ -58,7 +68,9 @@ fun LaunchpadTextFeild(
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
         disabledIndicatorColor = Color.Transparent,
-        cursorColor = BrandPrimary
+        cursorColor = BrandPrimary,
+        errorIndicatorColor = Color.Transparent,
+        errorContainerColor = Color.Transparent
     )
 
     val trailingIconBlock: (@Composable () -> Unit)? = if (isPassword) {
@@ -86,6 +98,8 @@ fun LaunchpadTextFeild(
         placeholder = placeholderBlock,
         trailingIcon = trailingIconBlock,
         lineLimits = TextFieldLineLimits.SingleLine,
+        isError = isError,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         outputTransformation = if (isPassword && !isPasswordVisible) {
             OutputTransformation {
                 // Obfuscate all characters with the dot symbol

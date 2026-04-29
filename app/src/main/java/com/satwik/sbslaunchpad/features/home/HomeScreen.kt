@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,13 +55,14 @@ fun HomeScreen(
     val threadUiState by threadViewModel.uiState.collectAsState()
     val noticeUiState by noticeViewModel.uiState.collectAsState()
 
-    val notificationCount = run {
+    val notificationCount = remember(threadUiState, noticeUiState) {
         val threadCount = if (threadUiState.success) {
             val threadsWithPosts = threadUiState.successResult as? List<ThreadWithPost> ?: emptyList()
             threadsWithPosts.sumOf { it.thread.unreadCount }
         } else 0
 
         val noticeCount = if (noticeUiState.success) {
+            @Suppress("UNCHECKED_CAST")
             val notices = noticeUiState.successResult as? List<Notice> ?: emptyList()
             notices.count { !it.isRead }
         } else 0

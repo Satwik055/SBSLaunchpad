@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
@@ -20,6 +19,7 @@ import com.satwik.sbslaunchpad.features.main.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadButton
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTextFeild
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTopAppBar
+import com.satwik.sbslaunchpad.core.designsystem.components.FieldError
 import com.satwik.sbslaunchpad.core.designsystem.components.TextFeildCard
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceOutline
 import org.koin.compose.viewmodel.koinViewModel
@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.LaunchpadYellow
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
@@ -52,12 +53,26 @@ fun LoginScreen(
 ) {
     val emailState = rememberTextFieldState()
     val passwordState = rememberTextFieldState()
-    val uiState by viewModel.uiState.collectAsState()
+    
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val formState by viewModel.formState.collectAsStateWithLifecycle()
+    
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(viewModel.validationEvents) {
+        viewModel.validationEvents.collect { event ->
+            when (event) {
+                LoginViewModel.ValidationEvent.Success -> {
+                    viewModel.login(onSuccess = onLoginSuccess)
+                }
+            }
+        }
+    }
 
     LaunchedEffect(uiState.error) {
         if (uiState.error.isNotEmpty()) {
             snackbarHostState.showSnackbar(uiState.error)
+            viewModel.clearError()
         }
     }
 
@@ -84,18 +99,32 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 TextFeildCard {
-                    LaunchpadTextFeild(
-                        state = emailState,
-                        semantic = ContentType.EmailAddress,
-                        placeholder = "Enter your email"
-                    )
+                    Column {
+                        LaunchpadTextFeild(
+                            state = emailState,
+                            onValueChange = { viewModel.onEvent(LoginFormEvent.EmailChanged(it)) },
+                            semantic = ContentType.EmailAddress,
+                            placeholder = "Enter your email",
+                            isError = formState.emailError != null
+                        )
+                        if (formState.emailError != null) {
+                            FieldError(text = formState.emailError!!)
+                        }
+                    }
                     HorizontalDivider(thickness = 1.dp, color = SurfaceOutline)
-                    LaunchpadTextFeild(
-                        state = passwordState,
-                        semantic = ContentType.Password,
-                        placeholder = "Enter your password",
-                        isPassword = true
-                    )
+                    Column {
+                        LaunchpadTextFeild(
+                            state = passwordState,
+                            onValueChange = { viewModel.onEvent(LoginFormEvent.PasswordChanged(it)) },
+                            semantic = ContentType.Password,
+                            placeholder = "Enter your password",
+                            isPassword = true,
+                            isError = formState.passwordError != null
+                        )
+                        if (formState.passwordError != null) {
+                            FieldError(text = formState.passwordError!!)
+                        }
+                    }
                 }
 
 
@@ -105,11 +134,7 @@ fun LoginScreen(
                     text = "Login",
                     loading = uiState.isLoading,
                     onClick = {
-                        viewModel.login(
-                            email = emailState.text.toString(),
-                            password = passwordState.text.toString(),
-                            onSuccess = onLoginSuccess
-                        )
+                        viewModel.onEvent(LoginFormEvent.Submit)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -148,6 +173,7 @@ fun LoginScreen(
         }
     }
 }
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

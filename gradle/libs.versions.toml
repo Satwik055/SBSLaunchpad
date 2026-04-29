@@ -19,6 +19,7 @@ supabase = "3.5.0"
 ktor = "3.4.2"
 googleGmsGoogleServices = "4.4.4"
 firebaseMessaging = "25.0.1"
+timber = "5.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -64,6 +65,7 @@ ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-utils = { group = "io.ktor", name = "ktor-utils", version.ref = "ktor" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

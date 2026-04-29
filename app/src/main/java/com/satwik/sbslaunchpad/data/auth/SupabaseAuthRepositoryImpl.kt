@@ -39,14 +39,14 @@ class SupabaseAuthRepositoryImpl(
 
     override suspend fun register(name: String, email: String, phone: String, password: String): Result<Unit> {
         return try {
-
             val fcmToken = firebaseMessaging.token.await()
             supabaseClient.auth.signUpWith(Email) {
-                this.email = email
+                this.email = email.lowercase()
                 this.password = password
                 data = buildJsonObject {
-                    put("full_name", name)
+                    put("full_name", name.lowercase())
                     put("fcm_token", fcmToken)
+                    put("phone", phone)
                 }
             }
             Result.success(Unit)

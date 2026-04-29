@@ -51,7 +51,6 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.OnNeutralContainer
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
-import com.satwik.sbslaunchpad.core.util.getRemainingTime
 import com.satwik.sbslaunchpad.core.util.toReadableDate
 import com.satwik.sbslaunchpad.data.post.Post
 import com.satwik.sbslaunchpad.features.auth.local_component.ScrollShadows

@@ -27,6 +27,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
 
@@ -78,7 +79,10 @@ fun SearchScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(filteredPosts, key = { it.id }) { post ->
+                items(filteredPosts, key = { it.id }, contentType = { "job_post" }) { post ->
+                    val onCardClick = remember(post.id) {
+                        { onJobClick(post.id) }
+                    }
                     LaunchpadJobPostCard(
                         jobProfile = post.jobProfile,
                         companyName = post.companyName,
@@ -89,7 +93,7 @@ fun SearchScreen(
                         salary = post.amount,
                         isApplied = false,
                         postType = post.type,
-                        onClick = { onJobClick(post.id) }
+                        onClick = onCardClick
                     )
                 }
             }

@@ -107,7 +107,7 @@ private fun JobPostCardBody(
     companyLogoUrl: String?
 ) {
 
-    val formattedSalary =  "%,d".format(Locale.getDefault(), salary)
+    val formattedSalary = remember(salary) { "%,d".format(Locale.getDefault(), salary) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -214,8 +214,8 @@ private fun JobPostCardBody(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = buildAnnotatedString {
+            val salaryText = remember(formattedSalary, postType) {
+                buildAnnotatedString {
                     withStyle(SpanStyle(fontFamily = poppins, fontWeight = FontWeight.Medium, fontSize = 15.sp, color = TextPrimary)) {
                         append("₹$formattedSalary")
                     }
@@ -227,8 +227,9 @@ private fun JobPostCardBody(
                             }
                         )
                     }
-                },
-            )
+                }
+            }
+            Text(text = salaryText)
 
             Icon(
                 painter = painterResource(R.drawable.ic_carret_right),
@@ -239,6 +240,7 @@ private fun JobPostCardBody(
         }
     }
 }
+
 
 @OptIn(ExperimentalTime::class)
 @Composable

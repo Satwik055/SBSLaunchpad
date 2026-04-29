@@ -1,20 +1,25 @@
 package com.satwik.sbslaunchpad.core.navigation
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.ui.NavDisplay
-import com.satwik.sbslaunchpad.features.account.presentation.AccountScreen
-import com.satwik.sbslaunchpad.features.account.presentation.AccountViewModel
+import com.satwik.sbslaunchpad.features.account.AccountScreen
+import com.satwik.sbslaunchpad.features.account.AccountViewModel
+import com.satwik.sbslaunchpad.features.editprofile.EditProfileScreen
 import com.satwik.sbslaunchpad.features.completeprofile.CompleteProfileScreen
 import com.satwik.sbslaunchpad.features.auth.login.LoginScreen
 import com.satwik.sbslaunchpad.features.auth.register.RegisterScreen
 import com.satwik.sbslaunchpad.features.blacklist.BlacklistedAccountScreen
 import com.satwik.sbslaunchpad.features.blacklist.BlacklistedAccountViewModel
-import com.satwik.sbslaunchpad.features.verification.ProfileVerificationPendingScreen
-import com.satwik.sbslaunchpad.features.verification.ProfileVerificationPendingViewModel
+import com.satwik.sbslaunchpad.features.verification.ProfileInReviewScreen
+import com.satwik.sbslaunchpad.features.verification.ProfileInReviewViewModel
+import com.satwik.sbslaunchpad.features.verification.ProfileRejectedScreen
+import com.satwik.sbslaunchpad.features.verification.ProfileRejectedViewModel
 import com.satwik.sbslaunchpad.features.detail.InternshipDetailsScreen
 import com.satwik.sbslaunchpad.features.detail.JobDetailsScreen
 import com.satwik.sbslaunchpad.features.home.HomeScreen
@@ -87,11 +92,25 @@ fun NavigationRoot(modifier: Modifier = Modifier, backStack: MutableList<NavKey>
                     }
                 }
 
-                is ScreenVerificationPending -> {
+                is ScreenProfileInReview -> {
                     NavEntry(key = key) {
-                        val viewModel: ProfileVerificationPendingViewModel = koinViewModel()
-                        ProfileVerificationPendingScreen(
+                        val viewModel: ProfileInReviewViewModel = koinViewModel()
+                        ProfileInReviewScreen(
                             onBackClick = { viewModel.logout() }
+                        )
+                    }
+                }
+
+                is ScreenProfileRejected -> {
+                    NavEntry(key = key) {
+                        val viewModel: ProfileRejectedViewModel = koinViewModel()
+                        val uiState by viewModel.uiState.collectAsState()
+                        ProfileRejectedScreen(
+                            rejectionReason = "The picture you attached was blurry, please attatch a clear picture of yours",
+                            uiState = uiState,
+                            onBackClick = { viewModel.logout() },
+                            onResubmitClick = { viewModel.resubmit() },
+                            onClearError = { viewModel.clearError() }
                         )
                     }
                 }
@@ -134,7 +153,19 @@ fun NavigationRoot(modifier: Modifier = Modifier, backStack: MutableList<NavKey>
                             onLogoutClick = {
                                 backStack.clear()
                                 backStack.add(ScreenWelcome)
+                            },
+                            onEditClick = {
+                                backStack.add(ScreenEditProfile)
                             }
+                        )
+                    }
+                }
+
+                is ScreenEditProfile -> {
+                    NavEntry(key = key) {
+                        EditProfileScreen(
+                            onBackClick = { backStack.remove(key) },
+                            onSuccess = { backStack.remove(key) }
                         )
                     }
                 }

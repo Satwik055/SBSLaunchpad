@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.satwik.sbslaunchpad.data.auth.AuthRepository
 import com.satwik.sbslaunchpad.data.profile.ProfileRepository
+import com.satwik.sbslaunchpad.data.profile.ProfileStatus
 import io.github.jan.supabase.auth.status.SessionStatus
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,8 +17,12 @@ sealed class AppState {
     data object Loading : AppState()
     data object LoginRequired : AppState()
     data object ProfileCompletionRequired : AppState()
-    data object VerificationPending : AppState()
+
+    data object ProfileRejected : AppState()
+    data object ProfileInReview : AppState()
     data object Blacklisted : AppState()
+
+
     data object Authorized : AppState()
 }
 
@@ -35,8 +39,6 @@ class MainViewModel(
     }
 
     private fun observeState() {
-        val startTime = System.currentTimeMillis()
-
         viewModelScope.launch {
             combine(
                 authRepository.sessionStatus,
@@ -52,8 +54,9 @@ class MainViewModel(
                         } else {
                             when {
                                 profile.isBlacklisted -> AppState.Blacklisted
-                                !profile.isProfileCompleted -> AppState.ProfileCompletionRequired
-                                !profile.isVerified -> AppState.VerificationPending
+                                profile.status == ProfileStatus.IN_REVIEW -> AppState.ProfileInReview
+                                profile.status == ProfileStatus.REJECTED -> AppState.ProfileRejected
+                                profile.status == ProfileStatus.PROFILE_COMPLETION_REQUIRED -> AppState.ProfileCompletionRequired
                                 else -> AppState.Authorized
                             }
                         }
@@ -64,13 +67,6 @@ class MainViewModel(
                     is SessionStatus.RefreshFailure -> AppState.LoginRequired
                 }
             }.collectLatest { newState ->
-                //Splash Screen logic
-                if (newState != AppState.Loading) {
-                    val elapsedTime = System.currentTimeMillis() - startTime
-                    if (elapsedTime < 2000) {
-                        delay(2000 - elapsedTime)
-                    }
-                }
                 _appState.value = newState
             }
         }

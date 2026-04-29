@@ -27,11 +27,13 @@ class CloudFileUploaderSupabaseImpl(
     ): Flow<Float> = flow {
         val path = getFilePath(folderName, fileName)
         val bucket = supabase.storage.from("profile")
-        bucket.uploadAsFlow(path, fileByteArray).collect {
-            when (it) {
+        bucket.uploadAsFlow(path, fileByteArray) {
+            upsert = true
+        }.collect { status ->
+            when (status) {
                 is UploadStatus.Progress -> {
-                    if (it.contentLength > 0L) {
-                        emit((it.totalBytesSend.toFloat() / it.contentLength))
+                    if (status.contentLength > 0L) {
+                        emit((status.totalBytesSend.toFloat() / status.contentLength))
                     }
                 }
                 is UploadStatus.Success -> emit(1f)

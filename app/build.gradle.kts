@@ -84,4 +84,5 @@ dependencies {
     implementation(libs.supabase.realtime)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.utils)
+    implementation(libs.timber)
 }

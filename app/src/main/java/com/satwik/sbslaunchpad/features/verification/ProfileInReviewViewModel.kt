@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.satwik.sbslaunchpad.data.auth.AuthRepository
 import kotlinx.coroutines.launch
 
-class ProfileVerificationPendingViewModel(
+class ProfileInReviewViewModel(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 

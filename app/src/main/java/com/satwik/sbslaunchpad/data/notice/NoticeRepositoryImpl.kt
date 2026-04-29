@@ -3,6 +3,7 @@ package com.satwik.sbslaunchpad.data.notice
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.filter.FilterOperation
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
@@ -22,11 +23,13 @@ class NoticeRepositoryImpl(
         val userId = getUserId()
         return client.postgrest.from("notice").selectAsFlow(
             primaryKey = Notice::id,
-            filter = FilterOperation("reciever_id", FilterOperator.EQ, userId)
+            filter = FilterOperation("receiver_id", FilterOperator.EQ, userId)
         )
     }
 
     override suspend fun markNoticeAsRead(noticeId: Int) {
+        val userId = getUserId()
+
         client.postgrest.from("notice").update(
             {
                 set("is_read", true)
@@ -34,6 +37,7 @@ class NoticeRepositoryImpl(
         ) {
             filter {
                 eq("id", noticeId)
+                eq("receiver_id", userId)
             }
         }
     }

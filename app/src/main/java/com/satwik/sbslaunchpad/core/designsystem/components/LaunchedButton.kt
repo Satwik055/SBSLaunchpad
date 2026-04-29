@@ -1,6 +1,6 @@
 package com.satwik.sbslaunchpad.core.designsystem.components
 
-import androidx.compose.foundation.layout.Box
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -23,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,7 +38,7 @@ fun LaunchpadButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     loading: Boolean = false,
-    leadingIcon: ImageVector? = null,
+    leadingIcon: Any? = null,
     containerColor: Color = BrandPrimary,
     contentColor: Color = BrandOnPrimary
 ) {
@@ -69,11 +67,22 @@ fun LaunchpadButton(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     if (leadingIcon != null) {
-                        Icon(
-                            imageVector = leadingIcon,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
+                        when (leadingIcon) {
+                            is Int -> {
+                                Icon(
+                                    painter = painterResource(id = leadingIcon),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                            is ImageVector -> {
+                                Icon(
+                                    imageVector = leadingIcon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
                         Spacer(modifier = Modifier.width(8.dp))
                     }
                     Text(

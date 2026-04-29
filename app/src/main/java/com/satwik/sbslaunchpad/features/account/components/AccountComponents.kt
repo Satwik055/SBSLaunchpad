@@ -1,4 +1,4 @@
-package com.satwik.sbslaunchpad.features.account.presentation.components
+package com.satwik.sbslaunchpad.features.account.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +28,8 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.ElevationStrength
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
+import androidx.compose.material3.HorizontalDivider
+import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceOutline
 import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 
 @Composable
@@ -60,42 +62,52 @@ fun DocumentItem(
     showEdit: Boolean = false,
     onViewClick: () -> Unit,
     onEditClick: () -> Unit = {},
-    isLast: Boolean = false
+    showDivider: Boolean = true
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = title,
-            modifier = Modifier.weight(1f),
-            style = TextStyle(
-                fontFamily = fontFamily,
-                fontWeight = FontWeight.Medium,
-                fontSize = 14.sp,
-                color = TextPrimary
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                modifier = Modifier.weight(1f),
+                style = TextStyle(
+                    fontFamily = fontFamily,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                    color = TextPrimary
+                )
             )
-        )
 
-        IconButton(onClick = onViewClick, modifier = Modifier.size(48.dp)) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_eye),
-                contentDescription = "View",
-                modifier = Modifier.size(20.dp),
-                tint = TextSecondary
-            )
-        }
-
-        if (showEdit) {
-            IconButton(onClick = onEditClick, modifier = Modifier.size(48.dp)) {
+            IconButton(onClick = onViewClick, modifier = Modifier.size(48.dp)) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_pencil),
-                    contentDescription = "Edit",
+                    painter = painterResource(id = R.drawable.ic_eye),
+                    contentDescription = "View",
                     modifier = Modifier.size(20.dp),
                     tint = TextSecondary
                 )
             }
+
+            if (showEdit) {
+                IconButton(onClick = onEditClick, modifier = Modifier.size(48.dp)) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_pencil),
+                        contentDescription = "Edit",
+                        modifier = Modifier.size(20.dp),
+                        tint = TextSecondary
+                    )
+                }
+            }
+        }
+
+        if (showDivider) {
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth(),
+                thickness = 1.dp,
+                color = SurfaceOutline
+            )
         }
     }
 }

@@ -7,6 +7,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -19,20 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.navigation3.runtime.NavKey
 import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
 import com.satwik.sbslaunchpad.core.navigation.NavigationRoot
 import com.satwik.sbslaunchpad.core.navigation.ScreenBlacklisted
@@ -40,10 +34,9 @@ import com.satwik.sbslaunchpad.core.navigation.ScreenCompleteProfile
 import com.satwik.sbslaunchpad.core.navigation.ScreenHome
 import com.satwik.sbslaunchpad.core.navigation.ScreenLogin
 import com.satwik.sbslaunchpad.core.navigation.ScreenRegister
-import com.satwik.sbslaunchpad.core.navigation.ScreenVerificationPending
+import com.satwik.sbslaunchpad.core.navigation.ScreenProfileInReview
+import com.satwik.sbslaunchpad.core.navigation.ScreenProfileRejected
 import com.satwik.sbslaunchpad.core.navigation.ScreenWelcome
-import com.satwik.sbslaunchpad.core.pushNotification.PushNotificationService
-import com.satwik.sbslaunchpad.features.welcome.WelcomeScreen
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -72,7 +65,27 @@ fun MainContent() {
     val viewModel: MainViewModel = koinViewModel()
     val appState by viewModel.appState.collectAsState()
 
-    if (appState is AppState.Loading) {
+    val requiredDestination = remember(appState) {
+        when (appState) {
+            is AppState.LoginRequired -> ScreenWelcome
+            is AppState.Blacklisted -> ScreenBlacklisted
+            is AppState.ProfileCompletionRequired -> ScreenCompleteProfile
+            is AppState.ProfileInReview -> ScreenProfileInReview
+            is AppState.ProfileRejected -> ScreenProfileRejected
+            is AppState.Authorized -> ScreenHome
+            else -> null
+        }
+    }
+
+    var currentTargetDestination by remember { mutableStateOf<NavKey?>(requiredDestination) }
+    LaunchedEffect(requiredDestination) {
+        if (requiredDestination != null) {
+            currentTargetDestination = requiredDestination
+        }
+    }
+
+    val target = currentTargetDestination
+    if (target == null) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -82,36 +95,26 @@ fun MainContent() {
         return
     }
 
-    val requiredDestination = remember(appState) {
-        when (appState) {
-            is AppState.LoginRequired -> ScreenWelcome
-            is AppState.Blacklisted -> ScreenBlacklisted
-            is AppState.ProfileCompletionRequired -> ScreenCompleteProfile
-            is AppState.VerificationPending -> ScreenVerificationPending
-            is AppState.Authorized -> ScreenHome
-            else -> ScreenWelcome
-        }
-    }
+    val backStack = rememberNavBackStack(target)
 
-    val backStack = rememberNavBackStack(requiredDestination)
-
-    LaunchedEffect(requiredDestination) {
+    LaunchedEffect(target) {
         val currentDestination = backStack.lastOrNull()
-        if (currentDestination != requiredDestination) {
+        if (currentDestination != target) {
             val isCurrentDestinationAGate = currentDestination == ScreenWelcome ||
                     currentDestination == ScreenLogin ||
                     currentDestination == ScreenRegister ||
                     currentDestination == ScreenCompleteProfile ||
-                    currentDestination == ScreenVerificationPending ||
+                    currentDestination == ScreenProfileInReview ||
+                    currentDestination == ScreenProfileRejected ||
                     currentDestination == ScreenBlacklisted
 
-            if (requiredDestination != ScreenHome) {
-                val isHandlingLoginGate = (requiredDestination == ScreenWelcome || requiredDestination == ScreenLogin) &&
+            if (target != ScreenHome) {
+                val isHandlingLoginGate = (target == ScreenWelcome || target == ScreenLogin) &&
                         (currentDestination == ScreenWelcome || currentDestination == ScreenLogin || currentDestination == ScreenRegister)
 
                 if (!isHandlingLoginGate) {
                     backStack.clear()
-                    backStack.add(requiredDestination)
+                    backStack.add(target)
                 }
             } else if (isCurrentDestinationAGate) {
                 backStack.clear()
@@ -120,11 +123,24 @@ fun MainContent() {
         }
     }
 
-    CompositionLocalProvider(LocalHorizontalAppPadding provides 16.dp) {
-        NavigationRoot(
-            modifier = Modifier.statusBarsPadding(),
-            backStack = backStack
-        )
+    Box(modifier = Modifier.fillMaxSize()) {
+        CompositionLocalProvider(LocalHorizontalAppPadding provides 16.dp) {
+            NavigationRoot(
+                modifier = Modifier.statusBarsPadding(),
+                backStack = backStack
+            )
+        }
+
+        if (appState is AppState.Loading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = BrandPrimary)
+            }
+        }
     }
 }
 

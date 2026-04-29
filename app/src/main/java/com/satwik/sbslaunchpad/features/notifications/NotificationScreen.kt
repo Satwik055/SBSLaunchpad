@@ -52,15 +52,16 @@ fun NotificationScreen(
     val threadUiState by threadViewModel.uiState.collectAsState()
     val noticeUiState by noticeViewModel.uiState.collectAsState()
 
-    val unreadUpdatesCount = run {
+    val unreadUpdatesCount = remember(threadUiState) {
         if (threadUiState.success) {
             val threadsWithPosts = threadUiState.successResult as? List<ThreadWithPost> ?: emptyList()
             threadsWithPosts.sumOf { it.thread.unreadCount }
         } else 0
     }
 
-    val unreadNoticesCount = run {
+    val unreadNoticesCount = remember(noticeUiState) {
         if (noticeUiState.success) {
+            @Suppress("UNCHECKED_CAST")
             val notices = noticeUiState.successResult as? List<Notice> ?: emptyList()
             notices.count { !it.isRead }
         } else 0

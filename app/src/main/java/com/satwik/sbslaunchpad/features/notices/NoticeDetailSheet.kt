@@ -99,9 +99,7 @@ private fun NoticeDetailSheetPreview() {
         title = "Final WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal WarningFinal Warning",
         body = "Students are advised to not use fake internship certificates in their resumes, once caught they will be blacklisted permanently from the placements. This is a very serious matter and the college will take strict action against those who are found guilty.",
         senderId = "admin1",
-        recieverId = "student1",
-        createdAt = "2023-10-27T10:15:30+05:30",
-        isRead = false
+        createdAt = "2023-10-27T10:15:30+05:30"
     )
 
     SBSLaunchpadTheme {

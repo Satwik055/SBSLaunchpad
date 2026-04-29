@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.satwik.sbslaunchpad.features.main.LocalHorizontalAppPadding
@@ -26,6 +27,8 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.DefaultElevation
 import com.satwik.sbslaunchpad.core.designsystem.theme.ElevationStrength
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceDefault
+import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
+import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
 import com.satwik.sbslaunchpad.core.util.Result
 import com.satwik.sbslaunchpad.data.notice.Notice
 import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
@@ -58,47 +61,63 @@ fun NoticesContent(
 
     Box(modifier = modifier.fillMaxSize()) {
         if (uiState.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center),
-                color = BrandPrimary
-            )
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = BrandPrimary
+                )
+            }
         } else if (uiState.success) {
             @Suppress("UNCHECKED_CAST")
             val notices = uiState.successResult as? List<Notice> ?: emptyList()
 
-            LazyScrollShadows(scrollState = scrollState) {
-                LazyColumn(
+            if (notices.isEmpty()) {
+                Box(
                     modifier = Modifier.fillMaxSize(),
-                    state = scrollState,
-                    contentPadding = PaddingValues(
-                        horizontal = LocalHorizontalAppPadding.current,
-                        vertical = 24.dp
-                    )
+                    contentAlignment = Alignment.Center
                 ) {
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .customShadow(
-                                    elevation = DefaultElevation,
-                                    shape = RoundedCornerShape(12.dp),
-                                    alpha = ElevationStrength,
-                                )
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(SurfaceDefault)
-                        ) {
-                            notices.forEachIndexed { index, notice ->
-                                NoticeItemCard(
-                                    title = notice.title,
-                                    date = notice.createdAt?.take(10) ?: "", // Simplified date for now
-                                    description = notice.body,
-                                    isNew = !notice.isRead,
-                                    showDivider = index != notices.lastIndex,
-                                    onClick = {
-                                        onMarkAsRead(notice.id)
-                                        onNoticeClick(notice)
-                                    }
-                                )
+                    Text(
+                        text = "No notices for you",
+                        fontFamily = poppins,
+                        fontWeight = FontWeight.Normal,
+                        color = TextSecondary
+                    )
+                }
+            } else {
+                LazyScrollShadows(scrollState = scrollState) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        state = scrollState,
+                        contentPadding = PaddingValues(
+                            horizontal = LocalHorizontalAppPadding.current,
+                            vertical = 24.dp
+                        )
+                    ) {
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .customShadow(
+                                        elevation = DefaultElevation,
+                                        shape = RoundedCornerShape(12.dp),
+                                        alpha = ElevationStrength,
+                                    )
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(SurfaceDefault)
+                            ) {
+                                notices.forEachIndexed { index, item ->
+                                    NoticeItemCard(
+                                        title = item.title,
+                                        date = item.createdAt?.take(10) ?: "", // Simplified date for now
+                                        description = item.body,
+                                        isNew = !item.isRead,
+                                        showDivider = index != notices.lastIndex,
+                                        onClick = {
+                                            onMarkAsRead(item.id)
+                                            onNoticeClick(item)
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
@@ -122,7 +141,6 @@ private fun NoticesScreenPreview() {
             title = "Final Warning",
             body = "Students are adviced to not use fake internship certificates in there resumes, once caught they will be blacklisted permanently from the placements...",
             senderId = "1",
-            recieverId = "2",
             createdAt = "2023-10-27",
             isRead = false
         ),
@@ -131,7 +149,6 @@ private fun NoticesScreenPreview() {
             title = "Placement Drive",
             body = "Google is visiting the campus for a placement drive on 30th October. All eligible students are requested to register.",
             senderId = "1",
-            recieverId = "2",
             createdAt = "2023-10-26",
             isRead = true
         )

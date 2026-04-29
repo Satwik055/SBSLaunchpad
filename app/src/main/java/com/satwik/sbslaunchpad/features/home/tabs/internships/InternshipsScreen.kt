@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -56,21 +57,35 @@ fun InternshipsScreen(
                     ),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(internships, key = { it.id }) { internship ->
-                        val isEligible = profile?.let { checkEligibility(it, internship) } ?: true
-                        val liveApplicants = applicantsCounts[internship.id] ?: internship.applicants.toIntOrNull() ?: 0
+                    items(internships, key = { it.id }, contentType = { "internship" }) { internship ->
+                        val isEligible = remember(profile, internship) {
+                            profile?.let { checkEligibility(it, internship) } ?: true
+                        }
+                        val liveApplicants = remember(applicantsCounts, internship) {
+                            applicantsCounts[internship.id] ?: internship.applicants.toIntOrNull() ?: 0
+                        }
+                        val applicantsText = remember(liveApplicants) {
+                            "$liveApplicants Applicants "
+                        }
+                        val isApplied = remember(appliedPostIds, internship.id) {
+                            appliedPostIds.contains(internship.id)
+                        }
+                        val onCardClick = remember(internship.id) {
+                            { onInternshipClick(internship.id) }
+                        }
+
                         LaunchpadJobPostCard(
                             jobProfile = internship.jobProfile,
                             companyName = internship.companyName,
                             deadline = internship.deadline,
-                            group = "Group${internship.group}",
+                            group = "Group ${internship.group}",
                             city = internship.city,
-                            applicants = "$liveApplicants Applicants ",
+                            applicants = applicantsText,
                             salary = internship.amount,
                             postType = PostType.INTERNSHIP,
-                            isApplied = appliedPostIds.contains(internship.id),
+                            isApplied = isApplied,
                             isEligible = isEligible,
-                            onClick = { onInternshipClick(internship.id) }
+                            onClick = onCardClick
                         )
                     }
                 }
@@ -90,7 +105,7 @@ private fun checkEligibility(profile: Profile, post: Post): Boolean {
     val yearMatch = post.reqYear.isEmpty() || post.reqYear.contains(profile.year)
     val tenthMatch = profile.tenthMarksPercentage >= post.reqTenthMarksPercentage
     val twelfthMatch = profile.twelfthMarksPercentage >= post.reqTwelfthMarksPercentage
-    val backlogMatch = post.reqBacklog == null || (profile.backlogs.toIntOrNull() ?: 0) <= post.reqBacklog
+    val backlogMatch = post.reqBacklog == null || profile.backlogs <= post.reqBacklog
 
     return courseMatch && cgpaMatch && yearMatch && tenthMatch && twelfthMatch && backlogMatch
 }

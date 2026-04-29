@@ -24,7 +24,7 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 
 @Composable
-fun ProfileVerificationPendingScreen(
+fun ProfileInReviewScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -57,7 +57,7 @@ fun ProfileVerificationPendingScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_fingerprint),
+                painter = painterResource(id = R.drawable.ic_scanning_smile),
                 contentDescription = null,
                 modifier = Modifier.size(140.dp),
                 tint = IconSecondary
@@ -66,7 +66,7 @@ fun ProfileVerificationPendingScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = "Profile verification pending",
+                text = "Your profile is in review",
                 style = TextStyle(
                     fontFamily = fontFamily,
                     fontWeight = FontWeight.Normal,
@@ -98,6 +98,6 @@ fun ProfileVerificationPendingScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun ProfileVerificationPendingScreenPreview() {
-    ProfileVerificationPendingScreen(onBackClick = {})
+private fun ProfileInReviewScreenPreview() {
+    ProfileInReviewScreen(onBackClick = {})
 }

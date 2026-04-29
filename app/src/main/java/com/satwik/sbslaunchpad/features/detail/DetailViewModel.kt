@@ -115,7 +115,7 @@ class DetailViewModel(
         val twelfthMatch = profile.twelfthMarksPercentage >= post.reqTwelfthMarksPercentage
         if (!twelfthMatch) reasons.add("12th marks are below requirement. Required: ${post.reqTwelfthMarksPercentage}%")
 
-        val backlogMatch = post.reqBacklog == null || (profile.backlogs.toIntOrNull() ?: 0) <= post.reqBacklog
+        val backlogMatch = post.reqBacklog == null || profile.backlogs <= post.reqBacklog
         if (!backlogMatch) reasons.add("Backlogs exceed the limit. Maximum allowed: ${post.reqBacklog}")
 
         return (reasons.isEmpty()) to reasons

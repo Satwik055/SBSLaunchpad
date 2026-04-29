@@ -19,7 +19,10 @@ data object ScreenCompleteProfile : NavKey
 data object ScreenBlacklisted : NavKey
 
 @Serializable
-data object ScreenVerificationPending : NavKey
+data object ScreenProfileInReview : NavKey
+
+@Serializable
+data object ScreenProfileRejected : NavKey
 
 @Serializable
 data object ScreenHome : NavKey
@@ -32,6 +35,9 @@ data object ScreenSearch : NavKey
 
 @Serializable
 data object ScreenAccount : NavKey
+
+@Serializable
+data object ScreenEditProfile : NavKey
 
 @Serializable
 data class ScreenJobDetail(val id: String) : NavKey

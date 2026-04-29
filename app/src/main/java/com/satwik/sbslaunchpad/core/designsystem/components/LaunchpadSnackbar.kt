@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
-import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 
 @Composable
@@ -35,7 +34,7 @@ fun LaunchpadSnackbarHost(
 ) {
     SnackbarHost(
         hostState = hostState,
-        modifier = modifier.padding(16.dp)
+        modifier = modifier.padding(top = 16.dp, bottom = 16.dp, start = 10.dp, end = 10.dp)
     ) { data ->
         Surface(
             color = Color.Red,
@@ -56,7 +55,7 @@ fun LaunchpadSnackbarHost(
                     painter = painterResource(id = R.drawable.ic_caution),
                     contentDescription = "Error",
                     tint = Color.White,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
@@ -73,14 +72,16 @@ fun LaunchpadSnackbarHost(
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun LaunchpadSnackbarHostPreview() {
-    val snackbarHostState = remember { SnackbarHostState() }
+private fun LaunchpadSnackbarHostPreview() {
+    val hostState = remember { SnackbarHostState() }
     LaunchedEffect(Unit) {
-        snackbarHostState.showSnackbar("This is a sample error message")
+        hostState.showSnackbar("This is a sample error message.")
     }
+
     SBSLaunchpadTheme {
-        LaunchpadSnackbarHost(hostState = snackbarHostState)
+        LaunchpadSnackbarHost(hostState = hostState)
     }
 }
+

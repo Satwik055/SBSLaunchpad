@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
@@ -26,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadSnackbarHost
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTextFeild
+import com.satwik.sbslaunchpad.core.designsystem.components.FieldError
 import com.satwik.sbslaunchpad.core.designsystem.components.TextFeildCard
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +40,8 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.LaunchpadYellow
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 import org.koin.compose.viewmodel.koinViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RegisterScreen(
@@ -54,8 +56,19 @@ fun RegisterScreen(
     val phoneState = rememberTextFieldState()
     val passwordState = rememberTextFieldState()
     val confirmPasswordState = rememberTextFieldState()
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val formState by viewModel.formState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(viewModel.validationEvents) {
+        viewModel.validationEvents.collectLatest { event ->
+            when (event) {
+                RegisterViewModel.ValidationEvent.Success -> {
+                    viewModel.register(onSuccess = onContinueClick)
+                }
+            }
+        }
+    }
 
     LaunchedEffect(uiState.error) {
         if (uiState.error.isNotEmpty()) {
@@ -86,37 +99,72 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 TextFeildCard {
-                    LaunchpadTextFeild(
-                        state = nameState,
-                        semantic = ContentType.PersonFirstName,
-                        placeholder = "Enter your full name "
-                    )
+                    Column {
+                        LaunchpadTextFeild(
+                            state = nameState,
+                            onValueChange = { viewModel.onEvent(RegisterFormEvent.NameChanged(it)) },
+                            semantic = ContentType.PersonFirstName,
+                            placeholder = "Enter your full name ",
+                            isError = formState.nameError != null
+                        )
+                        if (formState.nameError != null) {
+                            FieldError(text = formState.nameError!!)
+                        }
+                    }
                     HorizontalDivider(thickness = 1.dp, color = SurfaceOutline)
-                    LaunchpadTextFeild(
-                        state = emailState,
-                        semantic = ContentType.EmailAddress,
-                        placeholder = "Enter your email"
-                    )
+                    Column {
+                        LaunchpadTextFeild(
+                            state = emailState,
+                            onValueChange = { viewModel.onEvent(RegisterFormEvent.EmailChanged(it)) },
+                            semantic = ContentType.EmailAddress,
+                            placeholder = "Enter your email",
+                            isError = formState.emailError != null
+                        )
+                        if (formState.emailError != null) {
+                            FieldError(text = formState.emailError!!)
+                        }
+                    }
                     HorizontalDivider(thickness = 1.dp, color = SurfaceOutline)
-                    LaunchpadTextFeild(
-                        state = phoneState,
-                        semantic = ContentType.PhoneNumber,
-                        placeholder = "Enter your phone"
-                    )
+                    Column {
+                        LaunchpadTextFeild(
+                            state = phoneState,
+                            onValueChange = { viewModel.onEvent(RegisterFormEvent.PhoneChanged(it)) },
+                            semantic = ContentType.PhoneNumber,
+                            placeholder = "Enter your phone",
+                            isError = formState.phoneError != null
+                        )
+                        if (formState.phoneError != null) {
+                            FieldError(text = formState.phoneError!!)
+                        }
+                    }
                     HorizontalDivider(thickness = 1.dp, color = SurfaceOutline)
-                    LaunchpadTextFeild(
-                        state = passwordState,
-                        semantic = ContentType.Password,
-                        placeholder = "Enter your password",
-                        isPassword = true
-                    )
+                    Column {
+                        LaunchpadTextFeild(
+                            state = passwordState,
+                            onValueChange = { viewModel.onEvent(RegisterFormEvent.PasswordChanged(it)) },
+                            semantic = ContentType.Password,
+                            placeholder = "Enter your password",
+                            isPassword = true,
+                            isError = formState.passwordError != null
+                        )
+                        if (formState.passwordError != null) {
+                            FieldError(text = formState.passwordError!!)
+                        }
+                    }
                     HorizontalDivider(thickness = 1.dp, color = SurfaceOutline)
-                    LaunchpadTextFeild(
-                        state = confirmPasswordState,
-                        semantic = ContentType.Password,
-                        placeholder = "Confirm your password",
-                        isPassword = true
-                    )
+                    Column {
+                        LaunchpadTextFeild(
+                            state = confirmPasswordState,
+                            onValueChange = { viewModel.onEvent(RegisterFormEvent.ConfirmPasswordChanged(it)) },
+                            semantic = ContentType.Password,
+                            placeholder = "Confirm your password",
+                            isPassword = true,
+                            isError = formState.confirmPasswordError != null
+                        )
+                        if (formState.confirmPasswordError != null) {
+                            FieldError(text = formState.confirmPasswordError!!)
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -125,13 +173,7 @@ fun RegisterScreen(
                     text = "Continue",
                     loading = uiState.isLoading,
                     onClick = {
-                        viewModel.register(
-                            name = nameState.text.toString(),
-                            email = emailState.text.toString(),
-                            phone = phoneState.text.toString(),
-                            password = passwordState.text.toString(),
-                            onSuccess = onContinueClick
-                        )
+                        viewModel.onEvent(RegisterFormEvent.Submit)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -171,6 +213,7 @@ fun RegisterScreen(
         }
     }
 }
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

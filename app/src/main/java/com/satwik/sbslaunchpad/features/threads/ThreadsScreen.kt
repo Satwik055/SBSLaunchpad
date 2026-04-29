@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.satwik.sbslaunchpad.features.main.LocalHorizontalAppPadding
@@ -26,6 +27,10 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.DefaultElevation
 import com.satwik.sbslaunchpad.core.designsystem.theme.ElevationStrength
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceDefault
+import com.satwik.sbslaunchpad.core.designsystem.theme.TextOnSurface
+import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
+import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
+import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
 import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
 import com.satwik.sbslaunchpad.features.notifications.model.NotificationItemData
 import org.koin.compose.viewmodel.koinViewModel
@@ -48,51 +53,65 @@ fun UpdatesScreen(
         } else if (result.success) {
             val threadsWithPosts = result.successResult as? List<ThreadWithPost> ?: emptyList()
 
-            LazyScrollShadows(scrollState = scrollState) {
-                LazyColumn(
+            if (threadsWithPosts.isEmpty()) {
+                Box(
                     modifier = Modifier.fillMaxSize(),
-                    state = scrollState,
-                    contentPadding = PaddingValues(
-                        horizontal = LocalHorizontalAppPadding.current,
-                        vertical = 24.dp
-                    )
+                    contentAlignment = Alignment.Center
                 ) {
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .customShadow(
-                                    elevation = DefaultElevation,
-                                    shape = RoundedCornerShape(12.dp),
-                                    alpha = ElevationStrength,
-                                )
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(SurfaceDefault)
-                        ) {
-                            threadsWithPosts.forEachIndexed { index, item ->
-                                val thread = item.thread
-                                val post = item.post
-                                ThreadItemCard(
-                                    title = post?.jobProfile ?: "Update",
-                                    companyName = post?.companyName ?: "Placement Cell",
-                                    lastMessageText = thread.lastMessage,
-                                    logoUrl = post?.companyLogoUrl,
-                                    unreadCount = thread.unreadCount,
-                                    showDivider = index != threadsWithPosts.lastIndex,
-                                    onClick = {
-                                        onNotificationClick(
-                                            NotificationItemData(
-                                                threadId = thread.id,
-                                                title = post?.jobProfile ?: "Update",
-                                                company = post?.companyName ?: "Placement Cell",
-                                                description = thread.lastMessage,
-                                                time = thread.lastMessageTime,
-                                                logoUrl = post?.companyLogoUrl,
-                                                count = thread.unreadCount
+                    Text(
+                        text = "No updates for you",
+                        fontFamily = poppins,
+                        fontWeight = FontWeight.Normal,
+                        color = TextSecondary
+                    )
+                }
+            } else {
+                LazyScrollShadows(scrollState = scrollState) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        state = scrollState,
+                        contentPadding = PaddingValues(
+                            horizontal = LocalHorizontalAppPadding.current,
+                            vertical = 24.dp
+                        )
+                    ) {
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .customShadow(
+                                        elevation = DefaultElevation,
+                                        shape = RoundedCornerShape(12.dp),
+                                        alpha = ElevationStrength,
+                                    )
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(SurfaceDefault)
+                            ) {
+                                threadsWithPosts.forEachIndexed { index, item ->
+                                    val thread = item.thread
+                                    val post = item.post
+                                    ThreadItemCard(
+                                        title = post?.jobProfile ?: "Update",
+                                        companyName = post?.companyName ?: "Placement Cell",
+                                        lastMessageText = thread.lastMessage,
+                                        logoUrl = post?.companyLogoUrl,
+                                        unreadCount = thread.unreadCount,
+                                        showDivider = index != threadsWithPosts.lastIndex,
+                                        onClick = {
+                                            onNotificationClick(
+                                                NotificationItemData(
+                                                    threadId = thread.id,
+                                                    title = post?.jobProfile ?: "Update",
+                                                    company = post?.companyName ?: "Placement Cell",
+                                                    description = thread.lastMessage,
+                                                    time = thread.lastMessageTime,
+                                                    logoUrl = post?.companyLogoUrl,
+                                                    count = thread.unreadCount
+                                                )
                                             )
-                                        )
-                                    }
-                                )
+                                        }
+                                    )
+                                }
                             }
                         }
                     }

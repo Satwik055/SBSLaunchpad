@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -55,21 +56,35 @@ fun JobsScreen(
                     ),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(jobs, key = { it.id }) { job ->
-                        val isEligible = profile?.let { checkEligibility(it, job) } ?: true
-                        val liveApplicants = applicantsCounts[job.id] ?: job.applicants.toIntOrNull() ?: 0
+                    items(jobs, key = { it.id }, contentType = { "job" }) { job ->
+                        val isEligible = remember(profile, job) {
+                            profile?.let { checkEligibility(it, job) } ?: true
+                        }
+                        val liveApplicants = remember(applicantsCounts, job) {
+                            applicantsCounts[job.id] ?: job.applicants.toIntOrNull() ?: 0
+                        }
+                        val applicantsText = remember(liveApplicants) {
+                            "$liveApplicants Applicants"
+                        }
+                        val isApplied = remember(appliedPostIds, job.id) {
+                            appliedPostIds.contains(job.id)
+                        }
+                        val onCardClick = remember(job.id) {
+                            { onJobClick(job.id) }
+                        }
+
                         LaunchpadJobPostCard(
                             jobProfile = job.jobProfile,
                             companyName = job.companyName,
                             deadline = job.deadline,
                             group = "Group ${job.group}",
                             city = job.city,
-                            applicants = "$liveApplicants Applicants",
+                            applicants = applicantsText,
                             salary = job.amount,
-                            isApplied = appliedPostIds.contains(job.id),
+                            isApplied = isApplied,
                             isEligible = isEligible,
                             postType = PostType.JOB,
-                            onClick = { onJobClick(job.id) }
+                            onClick = onCardClick
                         )
                     }
                 }
@@ -89,7 +104,7 @@ private fun checkEligibility(profile: Profile, post: Post): Boolean {
     val yearMatch = post.reqYear.isEmpty() || post.reqYear.contains(profile.year)
     val tenthMatch = profile.tenthMarksPercentage >= post.reqTenthMarksPercentage
     val twelfthMatch = profile.twelfthMarksPercentage >= post.reqTwelfthMarksPercentage
-    val backlogMatch = post.reqBacklog == null || (profile.backlogs.toIntOrNull() ?: 0) <= post.reqBacklog
+    val backlogMatch = post.reqBacklog == null || profile.backlogs <= post.reqBacklog
 
     return courseMatch && cgpaMatch && yearMatch && tenthMatch && twelfthMatch && backlogMatch
 }

@@ -25,7 +25,9 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 fun LaunchpadTopAppBar(
     title: String,
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    actionIcon: Int? = null,
+    onActionClick: () -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -55,6 +57,22 @@ fun LaunchpadTopAppBar(
                 color = TextPrimary
             )
         )
+
+        if (actionIcon != null) {
+            IconButton(
+                onClick = onActionClick,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .size(60.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = actionIcon),
+                    contentDescription = "Action",
+                    modifier = Modifier.size(20.dp),
+                    tint = TextPrimary
+                )
+            }
+        }
     }
 }
 

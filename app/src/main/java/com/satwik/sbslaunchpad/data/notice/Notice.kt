@@ -15,8 +15,8 @@ data class Notice(
     @SerialName("sender_id")
     val senderId: String,
 
-    @SerialName("reciever_id")
-    val recieverId: String,
+    @SerialName("receiver_id")
+    val receiverId: String? = null,
 
     @SerialName("created_at")
     val createdAt: String? = null,

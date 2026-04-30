@@ -1,35 +1,42 @@
 package com.satwik.sbslaunchpad.data.profile
 
+import com.satwik.sbslaunchpad.data.profile.model.Profile
+import com.satwik.sbslaunchpad.data.profile.model.ProfileDto
+import com.satwik.sbslaunchpad.data.profile.model.toDto
+import com.satwik.sbslaunchpad.data.profile.model.toProfile
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.filter.FilterOperation
-import io.github.jan.supabase.postgrest.query.filter.FilterOperator
-import io.github.jan.supabase.realtime.selectAsFlow
 import io.github.jan.supabase.realtime.selectSingleValueAsFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
+import timber.log.Timber
 
 class SupabaseProfileRepositoryImpl(
     private val client: SupabaseClient,
     private val scope: CoroutineScope
 ) : ProfileRepository {
 
+    private val tag = "Timber-${this::class.simpleName}"
+
+
     @OptIn(SupabaseExperimental::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     override val profile: Flow<Profile?> = client.auth.sessionStatus
         .flatMapLatest { status ->
+            Timber.tag(tag).d("Profile session status: %s", status)
             when (status) {
                 is SessionStatus.Authenticated -> {
-                    val id = status.session.user?.id ?: return@flatMapLatest flowOf(null)
+                    val id = status.session.user?.id ?: return@flatMapLatest flowOf(null).also {
+                        Timber.tag(tag).w("Authenticated but user ID is null")
+                    }
                     client.postgrest.from("profile").selectSingleValueAsFlow(ProfileDto::id) {
                         eq("id", id)
                     }
@@ -38,84 +45,28 @@ class SupabaseProfileRepositoryImpl(
             }
         }
         .map { it?.toProfile() }
+        .catch { e ->
+            Timber.tag(tag).e(e, "Error in profile flow: %s", e.message)
+            throw e
+        }
         .shareIn(
             scope = scope,
             started = SharingStarted.WhileSubscribed(7000),
             replay = 1
         )
 
-    override suspend fun sendNewProfileRequest(request: NewProfileRequest): Result<Unit> {
-        return try {
-            client.postgrest.from("new_profile_request").insert(request)
-
-            client.postgrest.from("profile").update(
-                buildJsonObject {
-                    put("status", ProfileStatus.IN_REVIEW.name)
-                }
-            ) {
+    override suspend fun updateProfile(uuid:String, profile: Profile) {
+        Timber.tag(tag).d("Updating profile for user: %s", profile.id)
+        try {
+            client.postgrest.from("profile").update(profile.toDto()) {
                 filter {
-                    eq("id", request.requestedBy)
+                    eq("id", uuid)
                 }
             }
-
-            Result.success(Unit)
+            Timber.tag(tag).d("Successfully updated profile for user: %s", profile.id)
         } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun sendProfileUpdateRequest(request: ProfileUpdateRequest): Result<Unit> {
-        return try {
-            client.postgrest.from("profile_update_request").insert(request)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    @OptIn(SupabaseExperimental::class)
-    override fun getProfileUpdateRequest(): Flow<ProfileUpdateRequest?> {
-        val id = client.auth.currentUserOrNull()?.id ?: return flowOf(null)
-        return client.postgrest.from("profile_update_request").selectAsFlow(
-            primaryKey = ProfileUpdateRequest::id,
-            filter = FilterOperation("requested_by", FilterOperator.EQ, id)
-        ).map { list ->
-            list.filter { !it.isRead }.maxByOrNull { it.id }
-        }
-    }
-
-    override suspend fun resubmitProfile(): Result<Unit> {
-        return try {
-            val userId = client.auth.currentUserOrNull()?.id ?: throw Exception("User not authenticated")
-            client.postgrest.from("profile").update(
-                buildJsonObject {
-                    put("status", ProfileStatus.PROFILE_COMPLETION_REQUIRED.name)
-                }
-            ) {
-                filter {
-                    eq("id", userId)
-                }
-            }
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun markProfileUpdateRequestAsRead(requestId: Int): Result<Unit> {
-        return try {
-            client.postgrest.from("profile_update_request").update(
-                buildJsonObject {
-                    put("is_read", true)
-                }
-            ) {
-                filter {
-                    eq("id", requestId)
-                }
-            }
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
+            Timber.tag(tag).e(e, "Failed to update profile for user: %s, error: %s", profile.id, e.message)
+            throw e
         }
     }
 }

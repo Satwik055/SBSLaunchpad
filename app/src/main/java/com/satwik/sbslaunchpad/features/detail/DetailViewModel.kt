@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.satwik.sbslaunchpad.core.util.Result
 import com.satwik.sbslaunchpad.data.application.ApplicationRepository
 import com.satwik.sbslaunchpad.data.auth.AuthRepository
-import com.satwik.sbslaunchpad.data.post.Post
+import com.satwik.sbslaunchpad.data.post.model.Post
 import com.satwik.sbslaunchpad.data.post.PostRepository
-import com.satwik.sbslaunchpad.data.profile.Profile
+import com.satwik.sbslaunchpad.data.profile.model.Profile
 import com.satwik.sbslaunchpad.data.profile.ProfileRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -80,7 +80,7 @@ class DetailViewModel(
             }
 
             combine(
-                applicationRepository.getApplicationsForStudent(userId),
+                applicationRepository.getUserApplicationsById(userId),
                 profileRepository.profile
             ) { applications, profile ->
                 _isApplied.value = applications.any { it.postId == post.id }
@@ -122,9 +122,9 @@ class DetailViewModel(
     }
 
     private fun loadApplicantsCount(postId: String) {
-        applicationRepository.getAllApplicants(postId)
-            .onEach { count ->
-                _applicantsCount.value = count
+        applicationRepository.getPostApplicationsById(postId)
+            .onEach { applications ->
+                _applicantsCount.value = applications.size
             }
             .launchIn(viewModelScope)
     }

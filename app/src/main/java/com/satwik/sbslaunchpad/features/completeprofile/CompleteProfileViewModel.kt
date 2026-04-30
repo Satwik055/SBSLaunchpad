@@ -2,10 +2,11 @@ package com.satwik.sbslaunchpad.features.completeprofile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.satwik.sbslaunchpad.core.fileUploader.CloudFileUploader
+import com.satwik.sbslaunchpad.service.storage.CloudFileUploader
 import com.satwik.sbslaunchpad.core.util.Result
 import com.satwik.sbslaunchpad.data.auth.AuthRepository
-import com.satwik.sbslaunchpad.data.profile.NewProfileRequest
+import com.satwik.sbslaunchpad.data.new_profile_request.model.NewProfileRequest
+import com.satwik.sbslaunchpad.data.new_profile_request.NewProfileRequestRepository
 import com.satwik.sbslaunchpad.data.profile.ProfileRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
@@ -34,6 +35,7 @@ class CompleteProfileViewModel(
     private val client: SupabaseClient,
     private val authRepository: AuthRepository,
     private val profileRepository: ProfileRepository,
+    private val newProfileRequestRepository: NewProfileRequestRepository,
     private val cloudFileUploader: CloudFileUploader
 ) : ViewModel() {
 
@@ -257,7 +259,7 @@ class CompleteProfileViewModel(
                     resumeUrl = _resumeUploadState.value.url,
                 )
 
-                profileRepository.sendNewProfileRequest(newProfileRequest).getOrThrow()
+                newProfileRequestRepository.createNewProfileRequest(newProfileRequest)
                 _uiState.update { it.copy(isLoading = false, success = true) }
             } catch (e: Exception) {
                 e.printStackTrace()

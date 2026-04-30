@@ -43,7 +43,7 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
 import com.satwik.sbslaunchpad.core.util.Result
-import com.satwik.sbslaunchpad.data.thread.Message
+import com.satwik.sbslaunchpad.data.thread.model.ThreadMessage
 import com.satwik.sbslaunchpad.features.notifications.model.NotificationItemData
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -76,10 +76,10 @@ fun ThreadDetailSheet(
                 )
             } else {
                 @Suppress("UNCHECKED_CAST")
-                val messages = result.successResult as? List<Message> ?: emptyList()
+                val threadMessages = result.successResult as? List<ThreadMessage> ?: emptyList()
                 ThreadDetailContent(
                     notification = notification,
-                    messages = messages
+                    threadMessages = threadMessages
                 )
             }
         }
@@ -89,7 +89,7 @@ fun ThreadDetailSheet(
 @Composable
 fun ThreadDetailContent(
     notification: NotificationItemData,
-    messages: List<Message>,
+    threadMessages: List<ThreadMessage>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -149,13 +149,13 @@ fun ThreadDetailContent(
                 }
             }
         }
-        itemsIndexed(messages) { index, message ->
+        itemsIndexed(threadMessages) { index, message ->
             ThreadMessageItem(
                 content = message.content,
                 sender = message.admin?.name ?: "System",
                 time = message.createdAt ?: "",
                 isNew = !message.isRead,
-                showConnector = index != messages.lastIndex
+                showConnector = index != threadMessages.lastIndex
             )
         }
     }
@@ -175,7 +175,7 @@ fun ThreadDetailContentPreview() {
                 logoUrl = null,
                 count = 2
             ),
-            messages = emptyList()
+            threadMessages = emptyList()
         )
     }
 }

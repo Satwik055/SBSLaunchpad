@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.satwik.sbslaunchpad.data.auth.AuthRepository
 import com.satwik.sbslaunchpad.data.profile.ProfileRepository
-import com.satwik.sbslaunchpad.data.profile.ProfileStatus
+import com.satwik.sbslaunchpad.data.profile.model.ProfileStatus
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -22,8 +22,8 @@ import com.satwik.sbslaunchpad.features.main.LocalHorizontalAppPadding
 import com.satwik.sbslaunchpad.core.designsystem.components.SearchBarTrigger
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
-import com.satwik.sbslaunchpad.features.home.tabs.internships.InternshipsScreen
-import com.satwik.sbslaunchpad.features.home.tabs.jobs.JobsScreen
+import com.satwik.sbslaunchpad.features.internships.InternshipsScreen
+import com.satwik.sbslaunchpad.features.jobs.JobsScreen
 import com.satwik.sbslaunchpad.features.home.local_component.HomeTopAppBar
 import com.satwik.sbslaunchpad.data.profile.ProfileRepository
 import org.koin.compose.koinInject
@@ -33,7 +33,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import com.satwik.sbslaunchpad.features.threads.ThreadViewModel
 import com.satwik.sbslaunchpad.features.threads.ThreadWithPost
 import com.satwik.sbslaunchpad.features.notices.NoticeScreenViewModel
-import com.satwik.sbslaunchpad.data.notice.Notice
+import com.satwik.sbslaunchpad.data.notice.model.Notice
 
 @Composable
 fun HomeScreen(

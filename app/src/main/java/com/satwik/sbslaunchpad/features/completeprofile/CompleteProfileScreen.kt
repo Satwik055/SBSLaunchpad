@@ -56,7 +56,7 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceOutline
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 import com.satwik.sbslaunchpad.core.util.getFileName
-import com.satwik.sbslaunchpad.features.auth.local_component.ScrollShadows
+import com.satwik.sbslaunchpad.core.designsystem.components.ScrollShadows
 import com.satwik.sbslaunchpad.features.main.LocalHorizontalAppPadding
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel

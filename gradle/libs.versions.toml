@@ -1,5 +1,5 @@
 [versions]
-agp = "9.1.0"
+agp = "9.1.1"
 coreKtx = "1.10.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
@@ -20,6 +20,8 @@ ktor = "3.4.2"
 googleGmsGoogleServices = "4.4.4"
 firebaseMessaging = "25.0.1"
 timber = "5.0.1"
+firebaseCrashlytics = "20.0.5"
+googleFirebaseCrashlytics = "3.0.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -66,10 +68,12 @@ ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.r
 ktor-utils = { group = "io.ktor", name = "ktor-utils", version.ref = "ktor" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
+google-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "googleFirebaseCrashlytics" }
 

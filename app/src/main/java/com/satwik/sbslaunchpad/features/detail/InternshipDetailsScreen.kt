@@ -52,12 +52,13 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.OnNeutralContainer
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
 import com.satwik.sbslaunchpad.core.util.toReadableDate
-import com.satwik.sbslaunchpad.data.post.Post
-import com.satwik.sbslaunchpad.features.auth.local_component.ScrollShadows
+import com.satwik.sbslaunchpad.data.post.model.Post
+import com.satwik.sbslaunchpad.core.designsystem.components.ScrollShadows
 import com.satwik.sbslaunchpad.features.detail.local_components.JobDescriptionCard
 import com.satwik.sbslaunchpad.features.detail.local_components.JobDetailsTopBar
 import com.satwik.sbslaunchpad.features.detail.local_components.NoteSection
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Instant
 
 @Composable
 fun InternshipDetailsScreen(
@@ -192,7 +193,7 @@ private fun InternshipDetailsContent(
     requirements: String,
     deadline: kotlin.time.Instant,
     selectionProcess: String,
-    createdAt: kotlinx.datetime.Instant?,
+    createdAt: Instant?,
     note: String,
     companyLogoUrl: String?,
     onBackClick: () -> Unit,

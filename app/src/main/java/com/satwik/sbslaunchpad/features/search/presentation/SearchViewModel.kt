@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.satwik.sbslaunchpad.data.post.Post
+import com.satwik.sbslaunchpad.data.post.model.Post
 import com.satwik.sbslaunchpad.data.post.PostRepository
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest

@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import com.satwik.sbslaunchpad.core.util.Result
 import com.satwik.sbslaunchpad.data.admin.AdminRepository
-import com.satwik.sbslaunchpad.data.post.Post
+import com.satwik.sbslaunchpad.data.post.model.Post
 import com.satwik.sbslaunchpad.data.post.PostRepository
-import com.satwik.sbslaunchpad.data.thread.Message
-import com.satwik.sbslaunchpad.data.thread.Thread
+import com.satwik.sbslaunchpad.data.thread.model.ThreadMessage
+import com.satwik.sbslaunchpad.data.thread.model.Thread
 import com.satwik.sbslaunchpad.data.thread.ThreadRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -72,7 +72,7 @@ class ThreadViewModel(
     fun getMessages(threadId: Int): Flow<Result> {
         return threadRepository.getMessages(threadId)
             .flatMapLatest { messages ->
-                if (messages.isEmpty()) return@flatMapLatest flowOf(emptyList<Message>())
+                if (messages.isEmpty()) return@flatMapLatest flowOf(emptyList<ThreadMessage>())
 
                 val messageFlows = messages.map { message ->
                     flow {

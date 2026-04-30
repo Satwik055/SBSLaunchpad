@@ -32,7 +32,7 @@ import com.satwik.sbslaunchpad.features.threads.UpdatesScreen
 import com.satwik.sbslaunchpad.features.threads.ThreadViewModel
 import com.satwik.sbslaunchpad.features.notices.NoticeScreenViewModel
 import com.satwik.sbslaunchpad.features.threads.ThreadWithPost
-import com.satwik.sbslaunchpad.data.notice.Notice
+import com.satwik.sbslaunchpad.data.notice.model.Notice
 import androidx.compose.runtime.collectAsState
 import org.koin.compose.viewmodel.koinViewModel
 import kotlinx.coroutines.launch

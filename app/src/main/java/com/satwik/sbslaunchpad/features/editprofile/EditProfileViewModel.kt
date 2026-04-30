@@ -3,9 +3,11 @@ package com.satwik.sbslaunchpad.features.editprofile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.satwik.sbslaunchpad.core.util.Result
+import com.satwik.sbslaunchpad.data.profile.model.Profile
 import com.satwik.sbslaunchpad.data.profile.ProfileRepository
-import com.satwik.sbslaunchpad.data.profile.ProfileStatus
-import com.satwik.sbslaunchpad.data.profile.ProfileUpdateRequest
+import com.satwik.sbslaunchpad.data.profile.model.ProfileStatus
+import com.satwik.sbslaunchpad.data.profile_update_request.model.ProfileUpdateRequest
+import com.satwik.sbslaunchpad.data.profile_update_request.ProfileUpdateRequestRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,13 +16,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.put
 
 class EditProfileViewModel(
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val profileUpdateRequestRepository: ProfileUpdateRequestRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(Result())
@@ -38,36 +39,42 @@ class EditProfileViewModel(
     val validationEvents = validationEventChannel.receiveAsFlow()
 
     init {
+        loadProfileData()
+    }
+
+    private fun loadProfileData() {
         viewModelScope.launch {
             profileRepository.profile.collect { profile ->
-                profile?.let { p ->
-                    val newState = EditProfileFormState(
-                        fullName = p.fullName,
-                        email = p.email,
-                        course = p.course,
-                        semester = p.semester.toString(),
-                        phone = p.phone,
-                        backlogs = p.backlogs.toString(),
-                        rollNumber = p.rollNumber,
-                        cgpa = p.cgpa.toString(),
-                        tenthMarksPercentage = p.tenthMarksPercentage.toString(),
-                        twelfthMarksPercentage = p.twelfthMarksPercentage.toString(),
-                        year = p.year.toString(),
-                        permanentAddress = p.permanentAddress,
-                        currentAddress = p.currentAddress,
-                        profileImageUrl = p.profileImageUrl,
-                        status = p.status,
-                        rejectionReason = if (p.status == ProfileStatus.REJECTED) "Your request was rejected" else null
-                    )
-
-                    if (initialFormState == null) {
-                        initialFormState = newState
-                    }
-
-                    _formState.update { newState }
-                }
+                profile?.let { setProfileDataToInitialFormState(it) }
             }
         }
+    }
+
+    private fun setProfileDataToInitialFormState(p: Profile) {
+        val newState = EditProfileFormState(
+            fullName = p.fullName,
+            email = p.email,
+            course = p.course,
+            semester = p.semester.toString(),
+            phone = p.phone,
+            backlogs = p.backlogs.toString(),
+            rollNumber = p.rollNumber,
+            cgpa = p.cgpa.toString(),
+            tenthMarksPercentage = p.tenthMarksPercentage.toString(),
+            twelfthMarksPercentage = p.twelfthMarksPercentage.toString(),
+            year = p.year.toString(),
+            permanentAddress = p.permanentAddress,
+            currentAddress = p.currentAddress,
+            profileImageUrl = p.profileImageUrl,
+            status = p.status,
+            rejectionReason = if (p.status == ProfileStatus.REJECTED) "Your request was rejected" else null
+        )
+
+        if (initialFormState == null) {
+            initialFormState = newState
+        }
+
+        _formState.update { newState }
     }
 
     fun hasChanges(): Boolean {
@@ -161,18 +168,18 @@ class EditProfileViewModel(
             }
         } else {
             viewModelScope.launch {
-                updateProfile()
+                createProfileUpdateRequest()
             }
         }
     }
 
-    private suspend fun updateProfile() {
+    private suspend fun createProfileUpdateRequest() {
         val state = _formState.value
         try {
             _uiState.update { it.copy(isLoading = true, error = "") }
             val currentProfile = profileRepository.profile.first() ?: return
             
-            val updatedProfile = currentProfile.copy(
+            val updated = currentProfile.copy(
                 fullName = state.fullName,
                 email = state.email,
                 course = state.course,
@@ -188,17 +195,25 @@ class EditProfileViewModel(
                 currentAddress = state.currentAddress
             )
 
-            val currentProfileJson = Json.encodeToJsonElement(currentProfile).jsonObject
-            val updatedProfileJson = Json.encodeToJsonElement(updatedProfile).jsonObject
-
             val requestedChanges = buildJsonObject {
-                updatedProfileJson.forEach { (key, value) ->
-                    val isChanged = currentProfileJson[key] != value
-                    val isExcluded = key == "id" || key == "status" || key == "fcm_token" || key == "is_blacklisted"
-                    if (isChanged && !isExcluded) {
-                        put(key, value)
-                    }
-                }
+                if (currentProfile.fullName != updated.fullName) put("full_name", updated.fullName)
+                if (currentProfile.email != updated.email) put("email", updated.email)
+                if (currentProfile.twelfthMarksheetUrl != updated.twelfthMarksheetUrl) put("twelfth_marksheet_url", updated.twelfthMarksheetUrl)
+                if (currentProfile.tenthMarksheetUrl != updated.tenthMarksheetUrl) put("tenth_marksheet_url", updated.tenthMarksheetUrl)
+                if (currentProfile.profileImageUrl != updated.profileImageUrl) put("profile_image_url", updated.profileImageUrl)
+                if (currentProfile.course != updated.course) put("course", updated.course)
+                if (currentProfile.semester != updated.semester) put("semester", updated.semester)
+                if (currentProfile.phone != updated.phone) put("phone", updated.phone)
+                if (currentProfile.backlogs != updated.backlogs) put("backlogs", updated.backlogs)
+                if (currentProfile.cgpa != updated.cgpa) put("cgpa", updated.cgpa)
+                if (currentProfile.tenthMarksPercentage != updated.tenthMarksPercentage) put("tenth_marks_percentage", updated.tenthMarksPercentage)
+                if (currentProfile.twelfthMarksPercentage != updated.twelfthMarksPercentage) put("twelfth_marks_percentage", updated.twelfthMarksPercentage)
+                if (currentProfile.postSelectedIn != updated.postSelectedIn) put("post_selected_in", updated.postSelectedIn)
+                if (currentProfile.year != updated.year) put("year", updated.year)
+                if (currentProfile.rollNumber != updated.rollNumber) put("roll_number", updated.rollNumber)
+                if (currentProfile.permanentAddress != updated.permanentAddress) put("permanent_address", updated.permanentAddress)
+                if (currentProfile.currentAddress != updated.currentAddress) put("current_address", updated.currentAddress)
+                if (currentProfile.resumeUrl != updated.resumeUrl) put("resume_url", updated.resumeUrl)
             }
 
             if (requestedChanges.isNotEmpty()) {
@@ -206,12 +221,13 @@ class EditProfileViewModel(
                     requestedBy = currentProfile.id,
                     requestedChanges = requestedChanges
                 )
-                profileRepository.sendProfileUpdateRequest(updateRequest).getOrThrow()
+                profileUpdateRequestRepository.createProfileUpdateRequest(updateRequest)
             }
 
             _uiState.update { it.copy(isLoading = false, success = true) }
             validationEventChannel.send(ValidationEvent.Success)
         } catch (e: Exception) {
+            e.printStackTrace()
             _uiState.update { it.copy(isLoading = false, error = e.message ?: "Something went wrong") }
         }
     }

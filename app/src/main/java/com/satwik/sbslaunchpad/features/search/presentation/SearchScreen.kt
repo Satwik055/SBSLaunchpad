@@ -20,7 +20,7 @@ import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadSearchBar
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceOutline
-import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
+import com.satwik.sbslaunchpad.core.designsystem.components.LazyScrollShadows
 import kotlin.time.ExperimentalTime
 
 import org.koin.compose.viewmodel.koinViewModel

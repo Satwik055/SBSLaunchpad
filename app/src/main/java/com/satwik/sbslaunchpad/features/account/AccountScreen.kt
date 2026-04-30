@@ -26,6 +26,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,18 +61,18 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 import com.satwik.sbslaunchpad.core.util.Result
-import com.satwik.sbslaunchpad.data.profile.Profile
-import com.satwik.sbslaunchpad.data.profile.RequestStatus
-import com.satwik.sbslaunchpad.data.profile.ProfileUpdateRequest
+import com.satwik.sbslaunchpad.data.profile.model.Profile
+import com.satwik.sbslaunchpad.data.profile.model.RequestStatus
+import com.satwik.sbslaunchpad.data.profile_update_request.model.ProfileUpdateRequest
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import com.satwik.sbslaunchpad.features.editprofile.EditProfileTextFeild
 import com.satwik.sbslaunchpad.features.account.components.DocumentItem
 import com.satwik.sbslaunchpad.features.account.components.LogoutButton
-import com.satwik.sbslaunchpad.features.auth.local_component.ScrollShadows
+import com.satwik.sbslaunchpad.core.designsystem.components.ScrollShadows
 import kotlinx.coroutines.launch
 import androidx.compose.ui.tooling.preview.Preview
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
-import com.satwik.sbslaunchpad.data.profile.ProfileStatus
+import com.satwik.sbslaunchpad.data.profile.model.ProfileStatus
 import kotlinx.serialization.json.buildJsonObject
 
 @Composable
@@ -84,21 +85,26 @@ fun AccountScreen(
 ) {
     val accountState by viewModel.accountState.collectAsStateWithLifecycle()
     val latestUpdateRequest by viewModel.latestUpdateRequest.collectAsStateWithLifecycle()
+    val markRequestAsReadState by viewModel.markRequestAsReadState.collectAsStateWithLifecycle()
 
     AccountScreenContent(
         accountState = accountState,
         latestUpdateRequest = latestUpdateRequest,
+        markRequestAsReadState = markRequestAsReadState,
+        onResetMarkAsReadState = { viewModel.resetMarkAsReadState() },
         onBackClick = onBackClick,
         onLogoutClick = onLogoutClick,
         onEditClick = {
-            viewModel.automaticallyMarkLatestRequestAsRead()
-            onEditClick()
+            viewModel.markLatestRequestAsRead()
+            if(markRequestAsReadState.success || latestUpdateRequest.successResult == null ){
+                onEditClick()
+            }
         },
         onLogoutConfirmed = {
             viewModel.logout()
             onLogoutClick()
         },
-        onDismissRequest = { viewModel.markRequestAsRead(it) },
+        onDismissRequest = { viewModel.markLatestRequestAsRead() },
         modifier = modifier
     )
 }
@@ -107,15 +113,24 @@ fun AccountScreen(
 fun AccountScreenContent(
     accountState: Result,
     latestUpdateRequest: Result,
+    markRequestAsReadState: Result,
+    onResetMarkAsReadState: () -> Unit,
     onBackClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onEditClick: () -> Unit,
     onLogoutConfirmed: () -> Unit,
-    onDismissRequest: (Int) -> Unit,
+    onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(markRequestAsReadState.error) {
+        if (markRequestAsReadState.error.isNotEmpty()) {
+            snackbarHostState.showSnackbar(markRequestAsReadState.error)
+            onResetMarkAsReadState()
+        }
+    }
 
     if (showLogoutDialog) {
         LogoutConfirmationDialog(
@@ -135,6 +150,7 @@ fun AccountScreenContent(
             modifier = modifier.padding(padding),
             accountState = accountState,
             latestUpdateRequest = latestUpdateRequest,
+            markRequestAsReadState = markRequestAsReadState,
             snackbarHostState = snackbarHostState,
             onBackClick = onBackClick,
             onLogoutClick = { showLogoutDialog = true },
@@ -150,11 +166,12 @@ fun AccountContent(
     modifier: Modifier = Modifier,
     accountState: Result,
     latestUpdateRequest: Result,
+    markRequestAsReadState: Result,
     snackbarHostState: SnackbarHostState,
     onBackClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
     onEditClick: () -> Unit = {},
-    onDismissRequest: (Int) -> Unit = {},
+    onDismissRequest: () -> Unit = {},
 ) {
     val profile = accountState.successResult as? Profile
     val request = latestUpdateRequest.successResult as? ProfileUpdateRequest
@@ -163,6 +180,7 @@ fun AccountContent(
     val scope = rememberCoroutineScope()
 
     val isUpdatePending = request?.status == RequestStatus.IN_REVIEW
+    val isMarkingAsRead = markRequestAsReadState.isLoading
 
     fun viewDocument(url: String) {
         if (url.isNotEmpty()) {
@@ -207,34 +225,36 @@ fun AccountContent(
                         Spacer(modifier = Modifier.height(24.dp))
 
                         request?.let { request ->
-                            val calloutType = when (request.status) {
-                                RequestStatus.IN_REVIEW -> CalloutType.Warning
-                                RequestStatus.ACCEPTED -> CalloutType.Success
-                                RequestStatus.REJECTED -> CalloutType.Error
-                            }
+                            if (!request.isRead) {
+                                val calloutType = when (request.status) {
+                                    RequestStatus.IN_REVIEW -> CalloutType.Warning
+                                    RequestStatus.ACCEPTED -> CalloutType.Success
+                                    RequestStatus.REJECTED -> CalloutType.Error
+                                }
 
-                            val title = when (request.status) {
-                                RequestStatus.IN_REVIEW -> "Edit request in review"
-                                RequestStatus.ACCEPTED -> "Edit request approved"
-                                RequestStatus.REJECTED -> "Edit request rejected"
-                            }
+                                val title = when (request.status) {
+                                    RequestStatus.IN_REVIEW -> "Edit request in review"
+                                    RequestStatus.ACCEPTED -> "Edit request approved"
+                                    RequestStatus.REJECTED -> "Edit request rejected"
+                                }
 
-                            val description = when (request.status) {
-                                RequestStatus.IN_REVIEW -> "Your profile edit request is currently under review by the admin."
-                                RequestStatus.ACCEPTED -> "Your recent profile edit request has been approved."
-                                RequestStatus.REJECTED -> "Your recent profile edit request was rejected."
-                            }
+                                val description = when (request.status) {
+                                    RequestStatus.IN_REVIEW -> "Your profile edit request is currently under review by the admin."
+                                    RequestStatus.ACCEPTED -> "Your recent profile edit request has been approved."
+                                    RequestStatus.REJECTED -> "Your recent profile edit request was rejected."
+                                }
 
-                            CalloutCard(
-                                title = title,
-                                description = description,
-                                type = calloutType,
-                                reason = if (request.status == RequestStatus.REJECTED) request.note else null,
-                                onDismiss = if (calloutType == CalloutType.Success || calloutType == CalloutType.Error) {
-                                    { onDismissRequest(request.id) }
-                                } else null,
-                                modifier = Modifier.padding(bottom = 24.dp)
-                            )
+                                CalloutCard(
+                                    title = title,
+                                    description = description,
+                                    type = calloutType,
+                                    reason = if (request.status == RequestStatus.REJECTED) request.note else null,
+                                    onDismiss = if (calloutType == CalloutType.Success || calloutType == CalloutType.Error) {
+                                        { onDismissRequest() }
+                                    } else null,
+                                    modifier = Modifier.padding(bottom = 24.dp)
+                                )
+                            }
                         }
 
                         // Profile Picture with Coil
@@ -283,6 +303,7 @@ fun AccountContent(
                                         onEditClick()
                                     }
                                 },
+                                enabled = !isMarkingAsRead,
                                 containerColor = if (isUpdatePending) Color.White.copy(alpha = 0.6f) else Color.White,
                                 contentColor = if (isUpdatePending) Color.Black.copy(alpha = 0.5f) else Color.Black,
                                 leadingIcon = R.drawable.ic_pencil,
@@ -290,7 +311,7 @@ fun AccountContent(
                                     .width(100.dp)
                                     .height(44.dp)
                                     .customShadow(
-                                        elevation = if (isUpdatePending) 0.dp else 4.dp,
+                                        elevation = if (isUpdatePending || isMarkingAsRead) 0.dp else 4.dp,
                                         shape = CircleShape,
                                         alpha = 0.3f
                                     )
@@ -466,10 +487,12 @@ fun AccountScreenPreview() {
                         requestedChanges = buildJsonObject { }
                     )
                 ),
+                markRequestAsReadState = Result(),
                 snackbarHostState = remember { SnackbarHostState() },
                 onBackClick = {},
                 onLogoutClick = {},
-                onEditClick = {}
+                onEditClick = {},
+                onDismissRequest = {}
             )
         }
     }

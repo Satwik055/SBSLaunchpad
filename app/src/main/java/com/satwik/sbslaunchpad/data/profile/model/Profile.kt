@@ -1,0 +1,26 @@
+package com.satwik.sbslaunchpad.data.profile.model
+
+data class Profile(
+    val id: String = "null",
+    val fcmToken: String = "null",
+    val fullName: String = "null",
+    val email: String="null",
+    val twelfthMarksheetUrl: String="null",
+    val tenthMarksheetUrl: String="null",
+    val profileImageUrl: String="null",
+    val course: String="null",
+    val semester: Int= -1,
+    val phone: String="null",
+    val backlogs: Int= -1,
+    val cgpa: Double= -1.0,
+    val tenthMarksPercentage: Double= -1.0,
+    val twelfthMarksPercentage: Double= -1.0,
+    val postSelectedIn: String= "null",
+    val year: Int = -1,
+    val rollNumber: String="null",
+    val permanentAddress: String="null",
+    val currentAddress: String="null",
+    val resumeUrl: String="null",
+    val status: ProfileStatus = ProfileStatus.PROFILE_COMPLETION_REQUIRED,
+    val isBlacklisted: Boolean=false,
+)

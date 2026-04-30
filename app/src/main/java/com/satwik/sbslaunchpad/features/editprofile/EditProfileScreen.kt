@@ -1,6 +1,5 @@
 package com.satwik.sbslaunchpad.features.editprofile
 
-import androidx.activity.result.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,12 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -42,10 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.satwik.sbslaunchpad.R
-import com.satwik.sbslaunchpad.core.designsystem.components.CalloutCard
-import com.satwik.sbslaunchpad.core.designsystem.components.CalloutType
 import com.satwik.sbslaunchpad.core.designsystem.components.ConfirmationDialog
-import com.satwik.sbslaunchpad.data.profile.ProfileStatus
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadButton
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadSnackbarHost
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTopAppBar
@@ -53,10 +48,9 @@ import com.satwik.sbslaunchpad.core.designsystem.components.TextFeildCard
 import com.satwik.sbslaunchpad.core.designsystem.theme.BackgroundDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.BrandOnPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
-import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceOutline
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
-import com.satwik.sbslaunchpad.features.auth.local_component.ScrollShadows
+import com.satwik.sbslaunchpad.core.designsystem.components.ScrollShadows
 import com.satwik.sbslaunchpad.features.main.LocalHorizontalAppPadding
 import kotlinx.coroutines.flow.collectLatest
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
@@ -218,51 +212,21 @@ fun EditProfileContent(
                 scrollState = scrollState,
                 modifier = Modifier.weight(1f)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(scrollState)
-                        .padding(horizontal = LocalHorizontalAppPadding.current),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    if (formState.status != ProfileStatus.ACCEPTED) {
-                        val (title, description, type) = when (formState.status) {
-                            ProfileStatus.IN_REVIEW -> Triple(
-                                "Pending Edit Request",
-                                "You have an active profile edit request. Waiting for the admin approval to imply the changes",
-                                CalloutType.Warning
-                            )
-
-                            ProfileStatus.REJECTED -> Triple(
-                                "Pending Edit Request Rejected",
-                                "Your profile edit request has been rejected by admin.",
-                                CalloutType.Error
-                            )
-
-                            else -> Triple("", "", CalloutType.Warning)
-                        }
-
-                        if (title.isNotEmpty()) {
-                            CalloutCard(
-                                title = title,
-                                description = description,
-                                type = type,
-                                reason = formState.rejectionReason,
-                                onDismiss = if (type == CalloutType.Error) onClearError else null,
-                                modifier = Modifier.padding(bottom = 24.dp)
-                            )
-                        }
-                    } else if (uiState.success) {
-                        CalloutCard(
-                            title = "Profile Edit Request Approved",
-                            description = "Your profile edit request has been approved and changes has been made to your profile",
-                            type = CalloutType.Success,
-                            onDismiss = onClearError,
-                            modifier = Modifier.padding(bottom = 24.dp)
+                Box(modifier = Modifier.fillMaxSize()) {
+                    if (uiState.isLoading && formState.fullName.isEmpty()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center),
+                            color = BrandPrimary
                         )
-                    }
+                    } else {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .verticalScroll(scrollState)
+                                .padding(horizontal = LocalHorizontalAppPadding.current),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Spacer(modifier = Modifier.height(24.dp))
 
                     Box(
                         modifier = Modifier
@@ -432,6 +396,8 @@ fun EditProfileContent(
                     Spacer(modifier = Modifier.height(40.dp))
                 }
             }
+        }
+    }
 
             if (showConfirmationDialog) {
                 ConfirmationDialog(

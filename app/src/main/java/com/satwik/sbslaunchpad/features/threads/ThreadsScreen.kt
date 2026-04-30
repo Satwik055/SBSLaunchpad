@@ -27,11 +27,9 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.DefaultElevation
 import com.satwik.sbslaunchpad.core.designsystem.theme.ElevationStrength
 import com.satwik.sbslaunchpad.core.designsystem.theme.SBSLaunchpadTheme
 import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceDefault
-import com.satwik.sbslaunchpad.core.designsystem.theme.TextOnSurface
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
-import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
-import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
+import com.satwik.sbslaunchpad.core.designsystem.components.LazyScrollShadows
 import com.satwik.sbslaunchpad.features.notifications.model.NotificationItemData
 import org.koin.compose.viewmodel.koinViewModel
 

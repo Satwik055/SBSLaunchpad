@@ -30,8 +30,8 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.SurfaceDefault
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
 import com.satwik.sbslaunchpad.core.util.Result
-import com.satwik.sbslaunchpad.data.notice.Notice
-import com.satwik.sbslaunchpad.features.auth.local_component.LazyScrollShadows
+import com.satwik.sbslaunchpad.data.notice.model.Notice
+import com.satwik.sbslaunchpad.core.designsystem.components.LazyScrollShadows
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

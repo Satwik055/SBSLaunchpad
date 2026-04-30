@@ -29,7 +29,7 @@ import coil.compose.AsyncImage
 import com.satwik.sbslaunchpad.R
 import com.satwik.sbslaunchpad.core.designsystem.theme.*
 import com.satwik.sbslaunchpad.core.util.getRemainingTime
-import com.satwik.sbslaunchpad.data.post.PostType
+import com.satwik.sbslaunchpad.data.post.model.PostType
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

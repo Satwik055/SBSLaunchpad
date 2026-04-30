@@ -1,6 +1,6 @@
 package com.satwik.sbslaunchpad.features.editprofile
 
-import com.satwik.sbslaunchpad.data.profile.ProfileStatus
+import com.satwik.sbslaunchpad.data.profile.model.ProfileStatus
 
 data class EditProfileFormState(
     val fullName: String = "",

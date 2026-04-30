@@ -19,5 +19,5 @@ data class NotificationItemData(
 
 sealed interface NotificationSheetState {
     data class Notification(val data: NotificationItemData) : NotificationSheetState
-    data class Notice(val data: com.satwik.sbslaunchpad.data.notice.Notice) : NotificationSheetState
+    data class Notice(val data: com.satwik.sbslaunchpad.data.notice.model.Notice) : NotificationSheetState
 }

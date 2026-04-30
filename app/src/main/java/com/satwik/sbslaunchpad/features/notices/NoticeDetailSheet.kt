@@ -30,7 +30,7 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.TextPrimary
 import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.poppins
 import com.satwik.sbslaunchpad.core.util.toFormattedTimestamp
-import com.satwik.sbslaunchpad.data.notice.Notice
+import com.satwik.sbslaunchpad.data.notice.model.Notice
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)

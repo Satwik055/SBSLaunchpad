@@ -7,6 +7,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("release") {
+            storeFile = file("C:\\Users\\satwi\\OneDrive\\Documents\\SBSLaunchpad_signing_key")
+            storePassword = "Satwikkr"
+            keyAlias = "key0"
+            keyPassword = "Satwikkr"
+        }
+    }
     namespace = "com.satwik.sbslaunchpad"
     compileSdk {
         version = release(36) {
@@ -33,6 +41,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

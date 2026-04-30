@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.satwik.sbslaunchpad.core.designsystem.components.NoInternetScreen
 import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
 import com.satwik.sbslaunchpad.core.navigation.NavigationRoot
 import com.satwik.sbslaunchpad.core.navigation.ScreenBlacklisted
@@ -64,6 +65,8 @@ class MainActivity : ComponentActivity() {
 fun MainContent() {
     val viewModel: MainViewModel = koinViewModel()
     val appState by viewModel.appState.collectAsState()
+    val isOnline by viewModel.isOnline.collectAsState()
+    val isRetrying by viewModel.isRetrying.collectAsState()
 
     val requiredDestination = remember(appState) {
         when (appState) {
@@ -125,10 +128,18 @@ fun MainContent() {
 
     Box(modifier = Modifier.fillMaxSize()) {
         CompositionLocalProvider(LocalHorizontalAppPadding provides 16.dp) {
-            NavigationRoot(
-                modifier = Modifier.statusBarsPadding(),
-                backStack = backStack
-            )
+            if (isOnline) {
+                NavigationRoot(
+                    modifier = Modifier.statusBarsPadding(),
+                    backStack = backStack
+                )
+            } else {
+                NoInternetScreen(
+                    modifier = Modifier.statusBarsPadding(),
+                    onRetry = viewModel::retry,
+                    isRetrying = isRetrying
+                )
+            }
         }
 
         if (appState is AppState.Loading) {

@@ -7,8 +7,8 @@ import io.github.jan.supabase.auth.exception.AuthRestException
 object ErrorMessages {
 
     //Showing only one simple error and avoided showing different error messages for different types of errors to avoid users to get confused by the error message
-    const val JOB_SCREEN_ERROR = "Something went wrong while finding jobs"
-    const val INTERNSHIP_SCREEN_ERROR = "Something went wrong while finding internships"
+    const val JOB_SCREEN_ERROR = "Something went wrong while finding jobs, \ntry again later"
+    const val INTERNSHIP_SCREEN_ERROR = "Something went wrong while finding internships, \ntry again later"
     const val MARK_AS_READ_ERROR = "Something went wrong"
 }
 

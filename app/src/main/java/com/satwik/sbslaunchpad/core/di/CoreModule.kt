@@ -1,7 +1,9 @@
 package com.satwik.sbslaunchpad.core.di
 
 import com.google.firebase.messaging.FirebaseMessaging
+import com.satwik.sbslaunchpad.core.util.ConnectivityManagerNetworkMonitor
 import com.satwik.sbslaunchpad.core.util.Constants
+import com.satwik.sbslaunchpad.core.util.NetworkMonitor
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.postgrest.Postgrest
@@ -13,9 +15,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.json.Json
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val coreModule = module {
+    single<NetworkMonitor> { ConnectivityManagerNetworkMonitor(androidContext()) }
     single { CoroutineScope(Dispatchers.IO + SupervisorJob()) }
     single { FirebaseMessaging.getInstance() }
     single {

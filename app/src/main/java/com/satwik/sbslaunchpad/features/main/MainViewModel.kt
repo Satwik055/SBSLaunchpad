@@ -5,13 +5,20 @@ import androidx.lifecycle.viewModelScope
 import com.satwik.sbslaunchpad.data.auth.AuthRepository
 import com.satwik.sbslaunchpad.data.profile.ProfileRepository
 import com.satwik.sbslaunchpad.data.profile.model.ProfileStatus
+import com.satwik.sbslaunchpad.core.util.NetworkMonitor
 import io.github.jan.supabase.auth.status.SessionStatus
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 sealed class AppState {
     data object Loading : AppState()
@@ -28,18 +35,41 @@ sealed class AppState {
 
 class MainViewModel(
     private val authRepository: AuthRepository,
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val networkMonitor: NetworkMonitor
 ) : ViewModel() {
 
     private val _appState = MutableStateFlow<AppState>(AppState.Loading)
     val appState: StateFlow<AppState> = _appState.asStateFlow()
 
+    private val _isRetrying = MutableStateFlow(false)
+    val isRetrying = _isRetrying.asStateFlow()
+
+    val isOnline = networkMonitor.isOnline
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = true
+        )
+
     init {
         observeState()
     }
 
-    private fun observeState() {
+    private var observeJob: Job? = null
+
+    fun retry() {
         viewModelScope.launch {
+            _isRetrying.value = true
+            observeState()
+            delay(1000) // Show progress for at least 1 second
+            _isRetrying.value = false
+        }
+    }
+
+    private fun observeState() {
+        observeJob?.cancel()
+        observeJob = viewModelScope.launch {
             combine(
                 authRepository.sessionStatus,
                 profileRepository.profile
@@ -66,6 +96,11 @@ class MainViewModel(
                     is SessionStatus.Initializing -> AppState.Loading
                     is SessionStatus.RefreshFailure -> AppState.LoginRequired
                 }
+            }.catch { e ->
+                Timber.e(e, "Error in observeState")
+                // When an error occurs (like no internet), we might want to stay in Loading
+                // or move to Authorized if we want the screen-level offline check to take over.
+                // If it's a network error, the flow might terminate, so we should handle it.
             }.collectLatest { newState ->
                 _appState.value = newState
             }

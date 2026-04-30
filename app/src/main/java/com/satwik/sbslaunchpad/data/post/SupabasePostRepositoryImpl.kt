@@ -11,6 +11,7 @@ import io.github.jan.supabase.realtime.selectAsFlow
 import io.github.jan.supabase.realtime.selectSingleValueAsFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onStart
 import timber.log.Timber
 
 class SupabasePostRepositoryImpl(
@@ -26,7 +27,7 @@ class SupabasePostRepositoryImpl(
         val posts = client.postgrest.from("post").selectAsFlow(
             primaryKey = Post::id,
             filter = FilterOperation("type", FilterOperator.EQ, type.name)
-        ).catch { e ->
+        ).onStart { throw Exception("JA REE") }.catch { e ->
             Timber.tag(tag).e(e, "Error fetching all posts by type: %s", type)
             throw e
         }

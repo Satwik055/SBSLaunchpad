@@ -1,5 +1,6 @@
 package com.satwik.sbslaunchpad.core.di
 
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
 import com.satwik.sbslaunchpad.core.util.ConnectivityManagerNetworkMonitor
 import com.satwik.sbslaunchpad.core.util.Constants
@@ -22,6 +23,7 @@ val coreModule = module {
     single<NetworkMonitor> { ConnectivityManagerNetworkMonitor(androidContext()) }
     single { CoroutineScope(Dispatchers.IO + SupervisorJob()) }
     single { FirebaseMessaging.getInstance() }
+    single { FirebaseAnalytics.getInstance(androidContext()) }
     single {
         createSupabaseClient(
             supabaseUrl = Constants.SUPABASE_URL,

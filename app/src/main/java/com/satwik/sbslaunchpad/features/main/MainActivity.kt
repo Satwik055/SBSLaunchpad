@@ -27,6 +27,9 @@ import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.analytics
 import com.satwik.sbslaunchpad.core.designsystem.components.NoInternetScreen
 import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
 import com.satwik.sbslaunchpad.core.navigation.NavigationRoot
@@ -49,6 +52,7 @@ class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(

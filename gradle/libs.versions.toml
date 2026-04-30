@@ -22,6 +22,7 @@ firebaseMessaging = "25.0.1"
 timber = "5.0.1"
 firebaseCrashlytics = "20.0.5"
 googleFirebaseCrashlytics = "3.0.7"
+firebaseAnalytics = "23.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -69,6 +70,7 @@ ktor-utils = { group = "io.ktor", name = "ktor-utils", version.ref = "ktor" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebaseAnalytics" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

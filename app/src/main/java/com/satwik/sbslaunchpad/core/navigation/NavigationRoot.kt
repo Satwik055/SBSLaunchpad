@@ -3,6 +3,11 @@ package com.satwik.sbslaunchpad.core.navigation
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.logEvent
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavEntry
@@ -29,6 +34,20 @@ import com.satwik.sbslaunchpad.features.welcome.WelcomeScreen
 
 @Composable
 fun NavigationRoot(modifier: Modifier = Modifier, backStack: MutableList<NavKey>) {
+    val analytics: FirebaseAnalytics = koinInject()
+
+    //Sending the screen views to firebase analytics
+    LaunchedEffect(backStack.lastOrNull()) {
+        val currentScreen = backStack.lastOrNull()
+        if (currentScreen != null) {
+            val screenName = currentScreen::class.simpleName ?: "Unknown"
+            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                param(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
+                param(FirebaseAnalytics.Param.SCREEN_CLASS, screenName)
+            }
+        }
+    }
+
     NavDisplay(
         modifier = modifier,
         backStack = backStack,

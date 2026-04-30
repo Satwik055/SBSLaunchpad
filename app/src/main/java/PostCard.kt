@@ -245,7 +245,12 @@ private fun CardBody(
                         // Teardrop tail drawn as a simple line
                         val path = androidx.compose.ui.graphics.Path().apply {
                             moveTo(cx - r * 0.6f, r * 1.6f + 1.dp.toPx())
-                            quadraticBezierTo(cx, size.height + 1.dp.toPx(), cx + r * 0.6f, r * 1.6f + 1.dp.toPx())
+                            quadraticTo(
+                                cx,
+                                size.height + 1.dp.toPx(),
+                                cx + r * 0.6f,
+                                r * 1.6f + 1.dp.toPx()
+                            )
                         }
                         drawPath(path, color = c, style = stroke)
                     }

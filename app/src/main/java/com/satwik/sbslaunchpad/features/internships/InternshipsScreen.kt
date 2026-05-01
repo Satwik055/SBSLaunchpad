@@ -44,7 +44,7 @@ fun InternshipsScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = BrandPrimary)
+            InternshipScreenLoadingSkeleton()
         } else if (error.isNotEmpty()) {
             SomethingWentWrongErrorScreen(message = error)
         } else if (internshipState.success) {

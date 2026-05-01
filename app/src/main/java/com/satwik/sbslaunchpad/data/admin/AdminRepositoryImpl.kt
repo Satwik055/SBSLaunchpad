@@ -15,11 +15,13 @@ class AdminRepositoryImpl(
     override suspend fun getAdminById(id: String): Admin? {
         Timber.tag(tag).d("Fetching admin by id: %s", id)
         return try {
-            client.postgrest.from("admin").select {
+            val admin = client.postgrest.from("admin").select {
                 filter {
                     Admin::id eq id
                 }
             }.decodeSingleOrNull<Admin>()
+            Timber.tag(tag).d("Successfully fetched admin: %s", admin)
+            admin
         } catch (e: Exception) {
             Timber.tag(tag).e(e, "Error fetching admin by id: %s", id)
             throw e

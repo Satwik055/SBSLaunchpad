@@ -50,6 +50,7 @@ class SupabaseThreadRepositoryImpl(
             }
     }
 
+    //TODO (Fix this function interface and impl)
     override suspend fun markThreadAsRead(threadId: Int) {
         Timber.tag(tag).d("Marking thread %d as read", threadId)
         try {
@@ -69,6 +70,7 @@ class SupabaseThreadRepositoryImpl(
         }
     }
 
+    //TODO (Fix this function interface and impl)
     override suspend fun markMessagesAsRead(threadId: Int) {
         Timber.tag(tag).d("Marking messages in thread %d as read", threadId)
         try {

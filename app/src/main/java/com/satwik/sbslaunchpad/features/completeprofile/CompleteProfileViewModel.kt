@@ -23,6 +23,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+
+//TODO(Major cleanup required in this vm)
 data class UploadState(
     val isUploading: Boolean = false,
     val progress: Float = 0f,

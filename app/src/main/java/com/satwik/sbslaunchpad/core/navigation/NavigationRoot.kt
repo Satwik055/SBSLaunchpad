@@ -10,8 +10,12 @@ import com.google.firebase.analytics.logEvent
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.ui.Modifier
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.metadata
 import androidx.navigation3.ui.NavDisplay
 import com.satwik.sbslaunchpad.features.account.AccountScreen
 import com.satwik.sbslaunchpad.features.account.AccountViewModel
@@ -147,7 +151,19 @@ fun NavigationRoot(modifier: Modifier = Modifier, backStack: MutableList<NavKey>
                 }
 
                 is ScreenNotification -> {
-                    NavEntry(key = key) {
+                    NavEntry(
+                        key = key,
+                        metadata = metadata {
+                            put(NavDisplay.TransitionKey) {
+                                slideInHorizontally(initialOffsetX = { it }) togetherWith
+                                        slideOutHorizontally(targetOffsetX = { -it })
+                            }
+                            put(NavDisplay.PopTransitionKey) {
+                                slideInHorizontally(initialOffsetX = { -it }) togetherWith
+                                        slideOutHorizontally(targetOffsetX = { it })
+                            }
+                        }
+                    ) {
                         NotificationScreen(
                             onBackClick = { backStack.remove(key) }
                         )
@@ -164,7 +180,19 @@ fun NavigationRoot(modifier: Modifier = Modifier, backStack: MutableList<NavKey>
                 }
 
                 is ScreenAccount -> {
-                    NavEntry(key = key) {
+                    NavEntry(
+                        key = key,
+                        metadata = metadata {
+                            put(NavDisplay.TransitionKey) {
+                                slideInHorizontally(initialOffsetX = { -it }) togetherWith
+                                        slideOutHorizontally(targetOffsetX = { it })
+                            }
+                            put(NavDisplay.PopTransitionKey) {
+                                slideInHorizontally(initialOffsetX = { it }) togetherWith
+                                        slideOutHorizontally(targetOffsetX = { -it })
+                            }
+                        }
+                    ) {
                         val viewModel: AccountViewModel = koinViewModel()
                         AccountScreen(
                             viewModel = viewModel,

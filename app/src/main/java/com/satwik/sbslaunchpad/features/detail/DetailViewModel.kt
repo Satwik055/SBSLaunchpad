@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
+//TODO(state handling required in every function here)
 class DetailViewModel(
     private val repository: PostRepository,
     private val applicationRepository: ApplicationRepository,
@@ -129,7 +130,7 @@ class DetailViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun applyForPost(postId: String) {
+    fun createApplication(postId: String) {
         viewModelScope.launch {
             _applicationState.value = Result(isLoading = true)
             val userId = authRepository.currentUserId
@@ -138,7 +139,7 @@ class DetailViewModel(
                 return@launch
             }
             try {
-                applicationRepository.sendApplication(postId, userId)
+                applicationRepository.createApplication(postId, userId)
                 _applicationState.value = Result(success = true)
                 _isApplied.value = true
             } catch (e: Exception) {

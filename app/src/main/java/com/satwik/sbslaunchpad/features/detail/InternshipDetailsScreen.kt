@@ -19,7 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SnackbarHost
@@ -57,6 +56,7 @@ import com.satwik.sbslaunchpad.core.designsystem.components.ScrollShadows
 import com.satwik.sbslaunchpad.features.detail.local_components.JobDescriptionCard
 import com.satwik.sbslaunchpad.features.detail.local_components.JobDetailsTopBar
 import com.satwik.sbslaunchpad.features.detail.local_components.NoteSection
+import com.satwik.sbslaunchpad.features.jobs.JobScreenLoadingSkeleton
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Instant
 
@@ -96,7 +96,7 @@ fun InternshipDetailsScreen(
             .background(BackgroundDefault)
     ) {
         if (result.isLoading || isAppliedLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = BrandPrimary)
+            JobScreenLoadingSkeleton()
         } else if (result.success) {
             val post = result.successResult as Post
             InternshipDetailsContent(
@@ -114,7 +114,7 @@ fun InternshipDetailsScreen(
                 note = post.note,
                 companyLogoUrl = post.companyLogoUrl,
                 onBackClick = onBackClick,
-                onApplyClick = { viewModel.applyForPost(post.id) },
+                onApplyClick = { viewModel.createApplication(post.id) },
                 isApplying = applicationResult.isLoading,
                 isApplied = isApplied,
                 isAppliedLoading = isAppliedLoading,

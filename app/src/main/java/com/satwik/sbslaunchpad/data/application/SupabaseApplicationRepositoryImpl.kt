@@ -10,7 +10,6 @@ import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import io.github.jan.supabase.realtime.selectAsFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onStart
 import timber.log.Timber
 
 class SupabaseApplicationRepositoryImpl(
@@ -20,7 +19,7 @@ class SupabaseApplicationRepositoryImpl(
     private val tag = "Timber-${this::class.simpleName}"
 
 
-    override suspend fun sendApplication(postId: String, userId: String) {
+    override suspend fun createApplication(postId: String, userId: String) {
         Timber.tag(tag).d("Sending application for postId: %s, studentId: %s", postId, userId)
         val application = Application(
             postId = postId,

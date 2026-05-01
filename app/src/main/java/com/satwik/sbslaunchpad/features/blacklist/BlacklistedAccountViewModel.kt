@@ -9,6 +9,7 @@ class BlacklistedAccountViewModel(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
+    //TODO(Handle all states)
     fun logout() {
         viewModelScope.launch {
             authRepository.logout()

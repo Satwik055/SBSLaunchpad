@@ -36,6 +36,7 @@ class SupabaseNoticeRepositoryImpl(
         }
     }
 
+    //TODO (Fix this function interface and impl)
     override suspend fun markNoticeAsRead(noticeId: Int) {
         val userId = getUserId()
         Timber.tag(tag).d("Marking notice %d as read for user: %s", noticeId, userId)

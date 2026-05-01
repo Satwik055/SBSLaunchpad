@@ -63,7 +63,7 @@ fun LaunchpadJobPostCard(
         modifier = modifier
             .customShadow(
                 elevation = DefaultElevation,
-                shape = RoundedCornerShape(5.dp),
+                shape = RoundedCornerShape(12.dp),
                 alpha = ElevationStrength
             ),
         shape = RoundedCornerShape(12.dp),

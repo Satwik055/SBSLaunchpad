@@ -114,7 +114,7 @@ fun JobDetailsScreen(
                 note = post.note,
                 companyLogoUrl = post.companyLogoUrl,
                 onBackClick = onBackClick,
-                onApplyClick = { viewModel.applyForPost(post.id) },
+                onApplyClick = { viewModel.createApplication(post.id) },
                 isApplying = applicationResult.isLoading,
                 isApplied = isApplied,
                 isAppliedLoading = isAppliedLoading,

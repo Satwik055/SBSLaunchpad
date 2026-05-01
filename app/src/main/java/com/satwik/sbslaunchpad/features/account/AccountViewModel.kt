@@ -26,10 +26,8 @@ class AccountViewModel(
 ) : ViewModel() {
 
     private val tag = "Timber-${this::class.simpleName}"
-
     private val _accountState = MutableStateFlow(Result(isLoading = true))
     val accountState: StateFlow<Result> = _accountState.asStateFlow()
-
     private val _latestUpdateRequest = MutableStateFlow(Result(isLoading = true))
     val latestUpdateRequest: StateFlow<Result> = _latestUpdateRequest.asStateFlow()
 
@@ -38,10 +36,13 @@ class AccountViewModel(
         loadLatestProfileUpdateRequest()
     }
 
+    //TODO(Handle error state here)
     private fun loadAccount() {
+        Timber.tag(tag).d("Loading account profile...")
         viewModelScope.launch {
             _accountState.update { it.copy(isLoading = true) }
             profileRepository.profile.collect { account ->
+                Timber.tag(tag).d("Account profile loaded successfully: %s", account)
                 _accountState.update {
                     it.copy(
                         isLoading = false,
@@ -54,10 +55,12 @@ class AccountViewModel(
     }
 
     private fun loadLatestProfileUpdateRequest() {
+        Timber.tag(tag).d("Loading latest profile update request...")
         viewModelScope.launch {
             _latestUpdateRequest.update { it.copy(isLoading = true) }
             try {
                 profileUpdateRequestRepository.getProfileUpdateRequest().collectLatest { request ->
+                    Timber.tag(tag).d("Latest profile update request loaded: %s", request)
                     _latestUpdateRequest.update {
                         it.copy(
                             isLoading = false,
@@ -67,6 +70,7 @@ class AccountViewModel(
                     }
                 }
             } catch (e: Exception) {
+                Timber.tag(tag).e(e, "Failed to load latest profile update request | Error: ${e.message}")
                 _latestUpdateRequest.update {
                     it.copy(
                         isLoading = false,
@@ -77,9 +81,16 @@ class AccountViewModel(
         }
     }
 
+    //TODO(Handle all state here)
     fun logout() {
+        Timber.tag(tag).d("Attempting logout...")
         viewModelScope.launch {
-            authRepository.logout()
+            try {
+                authRepository.logout()
+                Timber.tag(tag).d("Logout successful")
+            } catch (e: Exception) {
+                Timber.tag(tag).e(e, "Logout failed")
+            }
         }
     }
 
@@ -105,6 +116,7 @@ class AccountViewModel(
     }
 
     fun resetMarkAsReadState() {
+        Timber.tag(tag).d("Resetting mark-as-read state")
         _markRequestAsReadState.value = Result()
     }
 }

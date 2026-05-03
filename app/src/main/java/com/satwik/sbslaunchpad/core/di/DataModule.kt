@@ -20,6 +20,8 @@ import com.satwik.sbslaunchpad.data.admin.AdminRepository
 import com.satwik.sbslaunchpad.data.admin.AdminRepositoryImpl
 import com.satwik.sbslaunchpad.data.notice.NoticeRepository
 import com.satwik.sbslaunchpad.data.notice.SupabaseNoticeRepositoryImpl
+import com.satwik.sbslaunchpad.service.remoteconfig.RemoteConfigRepository
+import com.satwik.sbslaunchpad.service.remoteconfig.FirebaseRemoteConfigRepositoryImpl
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -35,4 +37,5 @@ val dataModule = module {
     singleOf(::SupabaseNoticeRepositoryImpl) { bind<NoticeRepository>() }
     singleOf(::SupabaseProfileUpdateRequestRepositoryImpl) { bind<ProfileUpdateRequestRepository>() }
     singleOf(::SupabaseNewProfileRequestRepositoryImpl) { bind<NewProfileRequestRepository>() }
+    singleOf(::FirebaseRemoteConfigRepositoryImpl) { bind<RemoteConfigRepository>() }
 }

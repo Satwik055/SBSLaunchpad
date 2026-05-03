@@ -1,7 +1,6 @@
 package com.satwik.sbslaunchpad.service.storage
 
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.storage.UploadStatus
 import io.github.jan.supabase.storage.storage
 import io.github.jan.supabase.storage.uploadAsFlow
@@ -12,21 +11,26 @@ class SupabaseCloudFileUploaderImpl(
     private val supabase: SupabaseClient,
 ): CloudFileUploader {
 
-    private fun getUserId(): String {
-        return supabase.auth.currentUserOrNull()?.id ?: "unknown"
+    override suspend fun moveFile(bucketName: String, oldPath: String, newPath: String) {
+        val bucket = supabase.storage.from(bucketName)
+        bucket.move(oldPath, newPath)
     }
 
-    private fun getFilePath(folderName: String, fileName: String): String {
-        return "${getUserId()}/$folderName/$fileName"
+    override suspend fun listFiles(bucketName: String, path: String): List<String> {
+        val bucket = supabase.storage.from(bucketName)
+        return try {
+            bucket.list(path).map { it.name }
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
-    override fun uploadFileProgress(
-        folderName: String,
-        fileName: String,
+    override fun uploadFile(
+        bucketName: String,
+        path: String,
         fileByteArray: ByteArray
     ): Flow<Float> = flow {
-        val path = getFilePath(folderName, fileName)
-        val bucket = supabase.storage.from("profile")
+        val bucket = supabase.storage.from(bucketName)
         bucket.uploadAsFlow(path, fileByteArray) {
             upsert = true
         }.collect { status ->
@@ -36,9 +40,19 @@ class SupabaseCloudFileUploaderImpl(
                         emit((status.totalBytesSend.toFloat() / status.contentLength))
                     }
                 }
+
                 is UploadStatus.Success -> emit(1f)
             }
         }
+    }
+
+    override suspend fun deleteFile(bucketName: String, path: String) {
+        val bucket = supabase.storage.from(bucketName)
+        bucket.delete(path)
+    }
+
+    override fun getPublicUrl(bucketName: String, path: String): String {
+        return supabase.storage.from(bucketName).publicUrl(path)
     }
 
 }

@@ -11,5 +11,9 @@ sealed class CompleteProfileFormEvent {
     data class YearChanged(val year: String) : CompleteProfileFormEvent()
     data class TenthMarksPercentageChanged(val tenthMarksPercentage: String) : CompleteProfileFormEvent()
     data class TwelfthMarksPercentageChanged(val twelfthMarksPercentage: String) : CompleteProfileFormEvent()
+    object DeleteProfileImage : CompleteProfileFormEvent()
+    object DeleteResume : CompleteProfileFormEvent()
+    object DeleteTenthMarksheet : CompleteProfileFormEvent()
+    object DeleteTwelfthMarksheet : CompleteProfileFormEvent()
     object Submit : CompleteProfileFormEvent()
 }

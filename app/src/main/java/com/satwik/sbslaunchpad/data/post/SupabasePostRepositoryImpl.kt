@@ -27,7 +27,7 @@ class SupabasePostRepositoryImpl(
         val posts = client.postgrest.from("post").selectAsFlow(
             primaryKey = Post::id,
             filter = FilterOperation("type", FilterOperator.EQ, type.name)
-        ).catch { e ->
+        ).onStart { (throw Exception("Ek pyara sa exception")) }.catch { e ->
             Timber.tag(tag).e(e, "Error fetching all posts by type: %s", type)
             throw e
         }

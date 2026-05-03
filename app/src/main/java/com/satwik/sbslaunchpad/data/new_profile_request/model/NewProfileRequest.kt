@@ -41,8 +41,6 @@ data class NewProfileRequest(
 
     val year: Int = 0,
 
-    val phone: String = "",
-
     @SerialName("roll_number")
     val rollNumber: String = "",
 

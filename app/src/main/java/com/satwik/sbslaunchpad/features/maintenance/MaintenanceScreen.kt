@@ -1,4 +1,4 @@
-package com.satwik.sbslaunchpad.core.designsystem.components
+package com.satwik.sbslaunchpad.features.maintenance
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,12 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,10 +29,8 @@ import com.satwik.sbslaunchpad.core.designsystem.theme.TextSecondary
 import com.satwik.sbslaunchpad.core.designsystem.theme.fontFamily
 
 @Composable
-fun NoInternetScreen(
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-    isRetrying: Boolean = false
+fun MaintenanceScreen(
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
@@ -43,13 +41,12 @@ fun NoInternetScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.no_internet_illustration),
+            painter = painterResource(id = R.drawable.maintainance_illustration),
             contentDescription = null,
-            modifier = Modifier.size(150.dp)
+            modifier = Modifier.size(180.dp)
         )
-        Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = "No internet connection",
+            text = "We’ll be back soon",
             style = MaterialTheme.typography.titleLarge.copy(
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.Medium,
@@ -59,7 +56,7 @@ fun NoInternetScreen(
             textAlign = TextAlign.Center
         )
         Text(
-            text = "Please check your connection and try again",
+            text = "App is currently going under maintenance\nPlease check back shortly",
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.Normal,
@@ -68,22 +65,13 @@ fun NoInternetScreen(
             ),
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(32.dp))
-        LaunchpadButton(
-            text = "Try Again",
-            onClick = onRetry,
-            loading = isRetrying,
-            modifier = Modifier
-                .fillMaxWidth(0.4f)
-                .height(50.dp)
-        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun NoInternetScreenPreview() {
+fun MaintenanceScreenPreview() {
     SBSLaunchpadTheme {
-        NoInternetScreen(onRetry = {})
+        MaintenanceScreen()
     }
 }

@@ -22,9 +22,9 @@ class LaunchpadApp : Application() {
             )
         }
         if (BuildConfig.DEBUG) {
-            Timber.Forest.plant(Timber.DebugTree()) // Logs everything in debug
+            Timber.plant(Timber.DebugTree()) // Logs everything in debug
         } else {
-            Timber.Forest.plant(CrashReportingForRelease()) // Custom tree for release
+            Timber.plant(CrashReportingForRelease()) // Custom tree for release
         }
     }
 }

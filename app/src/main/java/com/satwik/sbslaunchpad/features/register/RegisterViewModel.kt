@@ -1,10 +1,10 @@
 package com.satwik.sbslaunchpad.features.register
 
-import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.satwik.sbslaunchpad.core.util.Result
 import com.satwik.sbslaunchpad.data.auth.AuthRepository
+import com.satwik.sbslaunchpad.features.completeprofile.FormValidator
 import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.exceptions.RestException
@@ -54,37 +54,12 @@ class RegisterViewModel(
 
     private fun submitData() {
         val state = _formState.value
-        var nameError: String? = null
-        var emailError: String? = null
-        var phoneError: String? = null
-        var passwordError: String? = null
-        var confirmPasswordError: String? = null
 
-        if (state.name.isBlank()) {
-            nameError = "Name cannot be empty"
-        }
-
-        if (state.email.isBlank()) {
-            emailError = "Email cannot be empty"
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
-            emailError = "Invalid email format"
-        }
-
-        if (state.phone.isBlank()) {
-            phoneError = "Phone cannot be empty"
-        } else if (state.phone.length < 10) {
-            phoneError = "Invalid phone number"
-        }
-
-        if (state.password.isBlank()) {
-            passwordError = "Password cannot be empty"
-        } else if (state.password.length < 6) {
-            passwordError = "Password must be at least 6 characters"
-        }
-
-        if (state.confirmPassword != state.password) {
-            confirmPasswordError = "Passwords do not match"
-        }
+        val nameError = FormValidator.validateName(state.name)
+        val emailError = FormValidator.validateEmail(state.email)
+        val phoneError = FormValidator.validatePhone(state.phone)
+        val passwordError = FormValidator.validatePassword(state.password)
+        val confirmPasswordError = FormValidator.validateConfirmPassword(state.password, state.confirmPassword)
 
         if (nameError != null || emailError != null || phoneError != null || passwordError != null || confirmPasswordError != null) {
             _formState.update {

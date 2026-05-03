@@ -31,6 +31,7 @@ data object ScreenHome : NavKey
 data object ScreenNotification : NavKey
 
 @Serializable
+
 data object ScreenSearch : NavKey
 
 @Serializable
@@ -44,3 +45,7 @@ data class ScreenJobDetail(val id: String) : NavKey
 
 @Serializable
 data class ScreenInternshipDetail(val id: String) : NavKey
+
+@Serializable
+data object ScreenMaintenance : NavKey
+

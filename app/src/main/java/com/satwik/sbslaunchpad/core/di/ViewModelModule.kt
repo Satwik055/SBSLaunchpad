@@ -15,6 +15,7 @@ import com.satwik.sbslaunchpad.features.jobs.JobsViewModel
 import com.satwik.sbslaunchpad.features.internships.InternshipsViewModel
 import com.satwik.sbslaunchpad.features.detail.DetailViewModel
 import com.satwik.sbslaunchpad.features.search.presentation.SearchViewModel
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 

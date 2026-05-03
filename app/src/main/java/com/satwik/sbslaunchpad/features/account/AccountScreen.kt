@@ -32,7 +32,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -65,6 +64,7 @@ import com.satwik.sbslaunchpad.data.profile.model.Profile
 import com.satwik.sbslaunchpad.data.profile.model.RequestStatus
 import com.satwik.sbslaunchpad.data.profile_update_request.model.ProfileUpdateRequest
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.ui.Alignment
 import com.satwik.sbslaunchpad.features.editprofile.EditProfileTextFeild
 import com.satwik.sbslaunchpad.features.account.components.DocumentItem
 import com.satwik.sbslaunchpad.features.account.components.LogoutButton
@@ -204,10 +204,7 @@ fun AccountContent(
         ScrollShadows(scrollState = scrollState) {
             Box(modifier = Modifier.fillMaxSize()) {
                 if (accountState.isLoading || latestUpdateRequest.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                        color = BrandPrimary
-                    )
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = BrandPrimary)
                 } else if (accountState.error.isNotEmpty()) {
                     Text(
                         text = accountState.error,

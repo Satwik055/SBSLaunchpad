@@ -1,10 +1,10 @@
 package com.satwik.sbslaunchpad.features.login
 
-import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.satwik.sbslaunchpad.core.util.Result
 import com.satwik.sbslaunchpad.data.auth.AuthRepository
+import com.satwik.sbslaunchpad.features.completeprofile.FormValidator
 import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.exceptions.RestException
@@ -47,20 +47,8 @@ class LoginViewModel(
         val email = _formState.value.email
         val password = _formState.value.password
 
-        var emailError: String? = null
-        var passwordError: String? = null
-
-        if (email.isBlank()) {
-            emailError = "Email cannot be empty"
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailError = "Invalid email format"
-        }
-
-        if (password.isBlank()) {
-            passwordError = "Password cannot be empty"
-        } else if (password.length < 6) {
-            passwordError = "Password must be at least 6 characters"
-        }
+        val emailError = FormValidator.validateEmail(email)
+        val passwordError = FormValidator.validatePassword(password)
 
         if (emailError != null || passwordError != null) {
             _formState.update {

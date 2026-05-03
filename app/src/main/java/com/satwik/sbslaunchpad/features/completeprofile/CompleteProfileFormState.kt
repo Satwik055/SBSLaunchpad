@@ -21,6 +21,7 @@ data class CompleteProfileFormState(
     val tenthMarksPercentageError: String? = null,
     val twelfthMarksPercentage: String = "",
     val twelfthMarksPercentageError: String? = null,
+    val profileImageError: String? = null,
     val resumeError: String? = null,
     val tenthMarksheetError: String? = null,
     val twelfthMarksheetError: String? = null

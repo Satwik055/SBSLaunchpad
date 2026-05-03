@@ -3,24 +3,36 @@ package com.satwik.sbslaunchpad.features.completeprofile
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,7 +42,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -43,6 +57,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadButton
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadSnackbarHost
 import com.satwik.sbslaunchpad.core.designsystem.components.LaunchpadTextFeild
@@ -65,6 +80,8 @@ import org.koin.compose.viewmodel.koinViewModel
 fun CompleteProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: CompleteProfileViewModel = koinViewModel(),
+    onLogoutSuccess: () -> Unit = {},
+    onProfileUpdateSuccess: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val formState by viewModel.formState.collectAsStateWithLifecycle()
@@ -73,9 +90,19 @@ fun CompleteProfileScreen(
     val resumeUploadState by viewModel.resumeUploadState.collectAsStateWithLifecycle()
     val tenthUploadState by viewModel.tenthMarksheetUploadState.collectAsStateWithLifecycle()
     val twelfthUploadState by viewModel.twelfthMarksheetUploadState.collectAsStateWithLifecycle()
+    val profileImageUploadState by viewModel.profileImageUploadState.collectAsStateWithLifecycle()
     val isAnyFileUploading by viewModel.isAnyFileUploading.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.success) {
+        if (uiState.success) {
+            when (uiState.successResult) {
+                "LOGOUT_SUCCESS" -> onLogoutSuccess()
+                "PROFILE_UPDATE_SUCCESS" -> onProfileUpdateSuccess()
+            }
+        }
+    }
 
     LaunchedEffect(uiState.error) {
         if (uiState.error.isNotEmpty()) {
@@ -88,7 +115,7 @@ fun CompleteProfileScreen(
         viewModel.validationEvents.collectLatest { event ->
             when (event) {
                 is CompleteProfileViewModel.ValidationEvent.Success -> {
-                    viewModel.updateProfile()
+                    viewModel.createNewProfileRequest()
                 }
             }
         }
@@ -161,25 +188,28 @@ fun CompleteProfileScreen(
     }
 
     // Helper for file selection
-    val handleFileSelection: (Uri?, String) -> Unit = { uri, folderName ->
+    val handleFileSelection: (Uri?, DocumentType) -> Unit = { uri, documentType ->
         uri?.let { selectedUri ->
             val fileName = getFileName(context, selectedUri)
             val inputStream = context.contentResolver.openInputStream(selectedUri)
             val fileBytes = inputStream?.use { it.readBytes() }
             if (fileBytes != null && fileName != null) {
-                viewModel.onFileSelected(folderName, fileBytes, fileName)
+                viewModel.uploadFileToTemp(documentType, fileBytes, fileName)
             }
         }
     }
 
     val resumeLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { 
-        handleFileSelection(it, "resume") 
+        handleFileSelection(it, DocumentType.Resume)
     }
     val tenthLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { 
-        handleFileSelection(it, "marksheet/tenth") 
+        handleFileSelection(it, DocumentType.TenthMarksheet)
     }
     val twelfthLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { 
-        handleFileSelection(it, "marksheet/twelfth")
+        handleFileSelection(it, DocumentType.TwelfthMarksheet)
+    }
+    val profileImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
+        handleFileSelection(it, DocumentType.ProfilePic)
     }
 
     var lastFullName by remember { mutableStateOf<String?>(null) }
@@ -242,6 +272,91 @@ fun CompleteProfileScreen(
                             color = TextPrimary
                         )
                     )
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .size(120.dp)
+                    ) {
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(32.dp))
+                                .clickable { profileImageLauncher.launch("image/*") },
+                            color = Color(0xFF4A4458)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                if (profileImageUploadState.url.isNotBlank()) {
+                                    Box(modifier = Modifier.fillMaxSize()) {
+                                        AsyncImage(
+                                            model = if (profileImageUploadState.fileByteArray != null) profileImageUploadState.fileByteArray else viewModel.getPublicUrl(profileImageUploadState.url),
+                                            contentDescription = "Profile Image",
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    }
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Default.Person,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(60.dp),
+                                        tint = Color(0xFF00C4B4)
+                                    )
+                                }
+
+                                if (profileImageUploadState.isUploading) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(Color.Black.copy(alpha = 0.4f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(
+                                            color = Color.White,
+                                            strokeWidth = 3.dp,
+                                            modifier = Modifier.size(40.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        // Add/Delete Button
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .offset(x = 8.dp, y = 8.dp)
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(Color.White)
+                                .clickable {
+                                    if (profileImageUploadState.url.isNotBlank() && !profileImageUploadState.isUploading) {
+                                        viewModel.onEvent(CompleteProfileFormEvent.DeleteProfileImage)
+                                    } else {
+                                        profileImageLauncher.launch("image/*")
+                                    }
+                                }
+                                .padding(8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = if (profileImageUploadState.url.isNotBlank() && !profileImageUploadState.isUploading) Icons.Default.Clear else Icons.Default.Add,
+                                contentDescription = if (profileImageUploadState.url.isNotBlank()) "Delete Profile Image" else "Add Profile Image",
+                                tint = if (profileImageUploadState.url.isNotBlank() && !profileImageUploadState.isUploading) Color.Red else Color.Black,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+
+                    if (formState.profileImageError != null) {
+                        FieldError(
+                            text = formState.profileImageError!!,
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            startPadding = 0.dp
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(32.dp))
 
@@ -411,6 +526,7 @@ fun CompleteProfileScreen(
                             loading = tenthUploadState.isUploading,
                             uploadProgress = tenthUploadState.progress,
                             onClick = { tenthLauncher.launch("application/pdf") },
+                            onDeleteClick = { viewModel.onEvent(CompleteProfileFormEvent.DeleteTenthMarksheet) }
                         )
                         if (formState.tenthMarksheetError != null) {
                             FieldError(text = formState.tenthMarksheetError!!, startPadding = 0.dp)
@@ -422,6 +538,7 @@ fun CompleteProfileScreen(
                             loading = twelfthUploadState.isUploading,
                             uploadProgress = twelfthUploadState.progress,
                             onClick = { twelfthLauncher.launch("application/pdf") },
+                            onDeleteClick = { viewModel.onEvent(CompleteProfileFormEvent.DeleteTwelfthMarksheet) }
                         )
                         if (formState.twelfthMarksheetError != null) {
                             FieldError(text = formState.twelfthMarksheetError!!, startPadding = 0.dp)
@@ -433,6 +550,7 @@ fun CompleteProfileScreen(
                             loading = resumeUploadState.isUploading,
                             uploadProgress = resumeUploadState.progress,
                             onClick = { resumeLauncher.launch("application/pdf") },
+                            onDeleteClick = { viewModel.onEvent(CompleteProfileFormEvent.DeleteResume) }
                         )
                         if (formState.resumeError != null) {
                             FieldError(text = formState.resumeError!!, startPadding = 0.dp)

@@ -1,7 +1,10 @@
 package com.satwik.sbslaunchpad.core.di
 
+import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.remoteconfig.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.satwik.sbslaunchpad.core.util.ConnectivityManagerNetworkMonitor
 import com.satwik.sbslaunchpad.core.util.Constants
 import com.satwik.sbslaunchpad.core.util.NetworkMonitor
@@ -20,10 +23,21 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val coreModule = module {
+    
     single<NetworkMonitor> { ConnectivityManagerNetworkMonitor(androidContext()) }
     single { CoroutineScope(Dispatchers.IO + SupervisorJob()) }
     single { FirebaseMessaging.getInstance() }
     single { FirebaseAnalytics.getInstance(androidContext()) }
+    single {
+        Firebase.remoteConfig.apply {
+            val configSettings = remoteConfigSettings {
+                minimumFetchIntervalInSeconds = 2
+            }
+            setConfigSettingsAsync(configSettings)
+            setDefaultsAsync(mapOf("is_under_maintenance" to false))
+        }
+    }
+
     single {
         createSupabaseClient(
             supabaseUrl = Constants.SUPABASE_URL,

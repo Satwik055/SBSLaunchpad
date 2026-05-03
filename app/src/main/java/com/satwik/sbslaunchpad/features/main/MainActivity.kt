@@ -30,17 +30,19 @@ import androidx.compose.runtime.getValue
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
-import com.satwik.sbslaunchpad.core.designsystem.components.NoInternetScreen
+import com.satwik.sbslaunchpad.features.maintenance.MaintenanceScreen
 import com.satwik.sbslaunchpad.core.designsystem.theme.BrandPrimary
 import com.satwik.sbslaunchpad.core.navigation.NavigationRoot
 import com.satwik.sbslaunchpad.core.navigation.ScreenBlacklisted
 import com.satwik.sbslaunchpad.core.navigation.ScreenCompleteProfile
 import com.satwik.sbslaunchpad.core.navigation.ScreenHome
 import com.satwik.sbslaunchpad.core.navigation.ScreenLogin
+import com.satwik.sbslaunchpad.core.navigation.ScreenMaintenance
 import com.satwik.sbslaunchpad.core.navigation.ScreenRegister
 import com.satwik.sbslaunchpad.core.navigation.ScreenProfileInReview
 import com.satwik.sbslaunchpad.core.navigation.ScreenProfileRejected
 import com.satwik.sbslaunchpad.core.navigation.ScreenWelcome
+import com.satwik.sbslaunchpad.features.nointernet.NoInternetScreen
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -80,6 +82,7 @@ fun MainContent() {
             is AppState.ProfileInReview -> ScreenProfileInReview
             is AppState.ProfileRejected -> ScreenProfileRejected
             is AppState.Authorized -> ScreenHome
+            is AppState.UnderMaintenance -> ScreenMaintenance
             else -> null
         }
     }
@@ -132,7 +135,9 @@ fun MainContent() {
 
     Box(modifier = Modifier.fillMaxSize()) {
         CompositionLocalProvider(LocalHorizontalAppPadding provides 16.dp) {
-            if (isOnline) {
+            if (appState is AppState.UnderMaintenance) {
+                MaintenanceScreen(modifier = Modifier.statusBarsPadding())
+            } else if (isOnline) {
                 NavigationRoot(
                     modifier = Modifier.statusBarsPadding(),
                     backStack = backStack

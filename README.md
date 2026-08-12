@@ -8,6 +8,10 @@ This app acts as intermediary between students and placement department of the c
 <br>
 (Note: Recruiter companies can't use the admin app directly to post the jobs) 
 
+**How the apps integrates in college placement process**
+
+<img width="4478" height="1042" alt="image" src="https://github.com/user-attachments/assets/074be516-5601-4945-8a94-aac01dfb518b" />
+
 ---
 
 ## Tools and Libraries

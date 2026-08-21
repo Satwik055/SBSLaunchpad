@@ -19,6 +19,8 @@ SBS Launchpad is built using modern Android development practices and a robust b
 
 * **Jetpack Compose**
 * **Dagger Hilt**
+* **Glide Image**
+* **Coroutines**
 * **Supabase Auth**
 * **Supabase Storage**
 * **Supabase Realtime** 
@@ -26,7 +28,6 @@ SBS Launchpad is built using modern Android development practices and a robust b
 * **Firebase Config**
 * **Firebase Analytics**
 * **Firebase Cloud Messaging**
-* **Coil**
 * **Timber** 
 ---
 
